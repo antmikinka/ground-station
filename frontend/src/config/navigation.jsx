@@ -29,6 +29,10 @@ import GroupWorkIcon from '@mui/icons-material/GroupWork';
 import WavesIcon from '@mui/icons-material/Waves';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import FolderIcon from '@mui/icons-material/Folder';
+import RadarIcon from '@mui/icons-material/Radar';
+import FlightIcon from '@mui/icons-material/Flight';
+import SearchIcon from '@mui/icons-material/Search';
+import SettingsIcon from '@mui/icons-material/Settings';
 import i18n from '../i18n/config.js';
 import { TleIcon } from '../components/common/custom-icons.jsx';
 import { Box, CircularProgress } from '@mui/material';
@@ -292,11 +296,11 @@ export const getNavigation = () => [
         title: i18n.t('rotators', { ns: 'navigation' }),
         icon: <SatelliteIcon/>,
     },
-    // {
-    //     segment: 'hardware/cameras',
-    //     title: i18n.t('cameras', { ns: 'navigation' }),
-    //     icon: <VideocamIcon/>,
-    // },
+    {
+        segment: 'hardware/cameras',
+        title: i18n.t('cameras', { ns: 'navigation' }),
+        icon: <VideocamIcon/>,
+    },
     {
         segment: 'hardware/sdrs',
         title: i18n.t('sdrs', { ns: 'navigation' }),
@@ -321,6 +325,19 @@ export const getNavigation = () => [
         segment: 'satellites/groups',
         title: i18n.t('groups', { ns: 'navigation' }),
         icon: <GroupWorkIcon/>,
+    },
+    {kind: 'divider'},
+    {
+        kind: 'header',
+        title: i18n.t('chemtrail', { ns: 'navigation' }),
+        icon: <RadarIcon />,
+        children: [
+            { kind: 'nav-link', label: i18n.t('cameras', { ns: 'navigation' }), pathname: '/chemtrail/cameras', icon: <VideocamIcon /> },
+            { kind: 'nav-link', label: i18n.t('detections', { ns: 'navigation' }), pathname: '/chemtrail/detections', icon: <RadarIcon /> },
+            { kind: 'nav-link', label: i18n.t('flights', { ns: 'navigation' }), pathname: '/chemtrail/flights', icon: <FlightIcon /> },
+            { kind: 'nav-link', label: i18n.t('archive_search', { ns: 'navigation' }), pathname: '/chemtrail/search', icon: <SearchIcon /> },
+            { kind: 'nav-link', label: i18n.t('pipeline_status', { ns: 'navigation' }), pathname: '/chemtrail/status', icon: <SettingsIcon /> },
+        ],
     },
     {kind: 'divider'},
     {

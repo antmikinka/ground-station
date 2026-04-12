@@ -35,6 +35,8 @@ from . import (
     transmitters,
     vfo,
     chemtrail_cameras,
+    chemtrail_detections,
+    chemtrail_flights,
 )
 
 __all__ = [
@@ -52,4 +54,6 @@ __all__ = [
     "systeminfo",
     "sessions",
     "chemtrail_cameras",
+    "chemtrail_detections",
+    "chemtrail_flights",
 ]

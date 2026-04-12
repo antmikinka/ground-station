@@ -49,6 +49,8 @@ import transcriptionReducer from '../waterfall/transcription-slice.jsx';
 import schedulerReducer from '../scheduler/scheduler-slice.jsx';
 import tasksReducer from '../tasks/tasks-slice.jsx';
 import backendSyncMiddleware from '../waterfall/vfo-marker/vfo-middleware.jsx';
+import chemtrailDetectionsReducer from '../chemtrail/detections/detections-slice.js';
+import chemtrailFlightsReducer from '../chemtrail/flights/flights-slice.js';
 
 const storage = storageEngine?.default ?? storageEngine;
 
@@ -314,6 +316,8 @@ export const store = configureStore({
         transcription: persistedTranscriptionReducer,
         scheduler: persistedSchedulerReducer,
         backgroundTasks: persistedTasksReducer,
+        chemtrailDetections: chemtrailDetectionsReducer,
+        chemtrailFlights: chemtrailFlightsReducer,
     },
     devTools: process.env.NODE_ENV !== "production",
     middleware: (getDefaultMiddleware) =>

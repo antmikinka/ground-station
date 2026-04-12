@@ -93,7 +93,7 @@ export function SettingsTabAbout () {
 }
 
 const tabsTree = {
-    "hardware": ["rigcontrol", "rotatorcontrol", /* "camera", */ "sdrs"],
+    "hardware": ["rigcontrol", "rotatorcontrol", "camera", "sdrs"],
     "satellites": ["satellites", "tlesources", "groups"],
     "settings": ["preferences", "location", "maintenance", "users", "about"],
 };
@@ -150,7 +150,7 @@ export const SettingsTabs = React.memo(function SettingsTabs({initialMainTab, in
             tabsList = [
                 <AntTab key="rigcontrol" value="rigcontrol" label={t('tabs.rigs')} to="/hardware/rig" component={Link} />,
                 <AntTab key="rotatorcontrol" value="rotatorcontrol" label={t('tabs.rotators')} to="/hardware/rotator" component={Link} />,
-                // <AntTab key="camera" value="camera" label={t('tabs.cameras')} to="/hardware/cameras" component={Link} />,
+                <AntTab key="camera" value="camera" label={t('tabs.cameras')} to="/hardware/cameras" component={Link} />,
                 <AntTab key="sdrs" value="sdrs" label={t('tabs.sdrs')} to="/hardware/sdrs" component={Link}/>,
             ];
             break;
@@ -207,6 +207,9 @@ export const SettingsTabs = React.memo(function SettingsTabs({initialMainTab, in
         // case "camera":
         //     activeTabContent = <CameraPage/>;
         //     break;
+        case "camera":
+            activeTabContent = <CameraPage/>;
+            break;
         case "sdrs":
             activeTabContent = <SDRsPage/>;
             break;

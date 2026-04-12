@@ -1,0 +1,145 @@
+{
+  "detections": {
+    "title": "Contrail Detections",
+    "subtitle": "View and manage detected contrails from camera feeds. Click on a row to view detailed information about each detection including flight correlation data.",
+    "table": {
+      "timestamp": "Timestamp",
+      "camera": "Camera",
+      "icao24": "ICAO24",
+      "callsign": "Callsign",
+      "type": "Type",
+      "confidence": "Confidence",
+      "correlation_score": "Correlation"
+    },
+    "filters": {
+      "camera": "Camera",
+      "type": "Type",
+      "date_from": "From Date",
+      "date_to": "To Date",
+      "all_cameras": "All Cameras",
+      "all_types": "All Types",
+      "contrail": "Contrail",
+      "cloud": "Cloud",
+      "other": "Other",
+      "reset": "Reset"
+    },
+    "actions": {
+      "refresh": "Refresh",
+      "view_details": "View Details",
+      "delete": "Delete",
+      "cancel": "Cancel"
+    },
+    "deleted_success": "Detection deleted successfully"
+  },
+  "detection": {
+    "confirm_deletion": "Confirm Deletion",
+    "confirm_delete_message": "Are you sure you want to delete the selected detection(s)?",
+    "deleted_success": "Detection deleted successfully"
+  },
+  "detail": {
+    "title": "Detection Details",
+    "section_detection": "Detection Metadata",
+    "section_position": "Estimated Position",
+    "section_flight": "Flight Correlation",
+    "section_confidence": "Confidence Scores",
+    "timestamp": "Timestamp",
+    "camera": "Camera",
+    "azimuth": "Azimuth",
+    "elevation": "Elevation",
+    "latitude": "Latitude",
+    "longitude": "Longitude",
+    "estimated_altitude": "Estimated Altitude",
+    "icao24": "ICAO24 Hex Code",
+    "callsign": "Callsign",
+    "origin": "Origin",
+    "destination": "Destination",
+    "aircraft_type": "Aircraft Type",
+    "no_flight_correlation": "No flight correlation data available",
+    "detection_confidence": "Detection Confidence",
+    "correlation_confidence": "Correlation Confidence",
+    "confidence_high": "High",
+    "confidence_medium": "Medium",
+    "confidence_low": "Low",
+    "fr24_enrichment": "FR24 Enrichment Data",
+    "close": "Close"
+  },
+  "flights": {
+    "title": "Live Flight Tracking",
+    "subtitle": "Real-time flight data from OpenSky Network and FlightRadar24. Shows aircraft currently being tracked that may correlate with contrail detections.",
+    "last_updated": "Last updated",
+    "table": {
+      "icao24": "ICAO24",
+      "callsign": "Callsign",
+      "registration": "Registration",
+      "aircraft_type": "Aircraft Type",
+      "origin": "Origin",
+      "destination": "Destination",
+      "data_sources": "Data Sources"
+    },
+    "actions": {
+      "view_details": "View Details",
+      "refresh": "Refresh",
+      "aircraft": "aircraft"
+    },
+    "detail": {
+      "basic_info": "Basic Information",
+      "route_info": "Route Information",
+      "data_sources": "Data Sources",
+      "flight_track": "Flight Track (Recent Positions)",
+      "icao24": "ICAO24",
+      "callsign": "Callsign",
+      "registration": "Registration",
+      "aircraft_type": "Aircraft Type",
+      "origin": "Origin Airport",
+      "destination": "Destination Airport",
+      "first_seen": "First Seen",
+      "last_seen": "Last Seen",
+      "no_data_sources": "No data source information available"
+    }
+  },
+  "search": {
+    "title": "Archive Search",
+    "subtitle": "Search the contrail detection archive using natural language queries. Search by date, location, flight callsign, or detection type.",
+    "placeholder": "Search archive (e.g., 'yesterday contrail', 'callsign:AAL123', 'lat:40.71 lon:-74.00 radius:50km')",
+    "example_date": "yesterday contrail",
+    "example_flight": "callsign:AAL123",
+    "example_location": "lat:40.7128 lon:-74.0060 radius:50km",
+    "results_count": "{{count}} results found",
+    "detection_image": "Detection image",
+    "no_results": "No results found",
+    "no_results_hint": "Try adjusting your search terms or filters",
+    "initial_state": "Search the archive",
+    "initial_state_hint": "Enter a search query above to find detections"
+  },
+  "status": {
+    "title": "Pipeline Status",
+    "subtitle": "Monitor the health and performance of the FlightRadar24 integration and data pipeline.",
+    "refresh": "Refresh Status",
+    "fr24_health": "FR24 Health Status",
+    "metrics": "Performance Metrics",
+    "overall_status": "Overall Status",
+    "circuit_breaker": "Circuit Breaker State",
+    "circuit_breaker_closed": "Closed (Normal)",
+    "circuit_breaker_open": "Open (Blocked)",
+    "circuit_breaker_half_open": "Half-Open (Recovering)",
+    "last_check": "Last health check",
+    "unknown": "Unknown",
+    "total_requests": "Total Requests",
+    "success_rate": "Success Rate",
+    "avg_latency": "Avg Latency",
+    "cache_hit_rate": "Cache Hit Rate",
+    "successful": "Successful Requests",
+    "failed": "Failed Requests",
+    "cache_hits": "Cache Hits",
+    "cache_misses": "Cache Misses"
+  },
+  "actions": {
+    "close": "Close",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "refresh": "Refresh",
+    "view_details": "View Details",
+    "search": "Search",
+    "save": "Save"
+  }
+}

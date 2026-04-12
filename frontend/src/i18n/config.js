@@ -32,6 +32,7 @@ import targetEN from './locales/en/target.json';
 import dashboardEN from './locales/en/dashboard.json';
 import waterfallEN from './locales/en/waterfall.json';
 import filebrowserEN from './locales/en/filebrowser.json';
+import chemtrailEN from './locales/en/chemtrail.json';
 
 import commonEL from './locales/el/common.json';
 import navigationEL from './locales/el/navigation.json';
@@ -118,6 +119,7 @@ const resources = {
         dashboard: dashboardEN,
         waterfall: waterfallEN,
         filebrowser: filebrowserEN,
+        chemtrail: chemtrailEN,
     },
     el: {
         common: commonEL,
@@ -131,6 +133,7 @@ const resources = {
         dashboard: dashboardEL,
         waterfall: waterfallEL,
         filebrowser: filebrowserEL,
+        chemtrail: chemtrailEN, // Fallback to English
     },
     fr: {
         common: commonFR,
@@ -144,6 +147,7 @@ const resources = {
         dashboard: dashboardFR,
         waterfall: waterfallFR,
         filebrowser: filebrowserFR,
+        chemtrail: chemtrailEN, // Fallback to English
     },
     es: {
         common: commonES,
@@ -157,6 +161,7 @@ const resources = {
         dashboard: dashboardES,
         waterfall: waterfallES,
         filebrowser: filebrowserES,
+        chemtrail: chemtrailEN, // Fallback to English
     },
     de: {
         common: commonDE,
@@ -170,6 +175,7 @@ const resources = {
         dashboard: dashboardDE,
         waterfall: waterfallDE,
         filebrowser: filebrowserDE,
+        chemtrail: chemtrailEN, // Fallback to English
     },
     nl: {
         common: commonNL,
@@ -183,6 +189,7 @@ const resources = {
         dashboard: dashboardNL,
         waterfall: waterfallNL,
         filebrowser: filebrowserNL,
+        chemtrail: chemtrailEN, // Fallback to English
     },
     it: {
         common: commonIT,
@@ -196,6 +203,7 @@ const resources = {
         dashboard: dashboardIT,
         waterfall: waterfallIT,
         filebrowser: filebrowserIT,
+        chemtrail: chemtrailEN, // Fallback to English
     },
 };
 

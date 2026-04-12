@@ -50,6 +50,10 @@ import {WakeLockProvider} from "./components/dashboard/wake-lock-provider.jsx";
 import SatelliteInfoPage from "./components/satellites/satellite-info-page.jsx";
 import FilebrowserMain from "./components/filebrowser/filebrowser-main.jsx";
 import ScheduledObservationsLayout from "./components/scheduler/main-layout.jsx";
+import DetectionTable from "./components/chemtrail/detections/detection-table.jsx";
+import FlightTable from "./components/chemtrail/flights/flight-table.jsx";
+import ArchiveSearch from "./components/chemtrail/search/archive-search.jsx";
+import PipelineStatus from "./components/chemtrail/status/pipeline-status.jsx";
 
 const enableStrictMode = import.meta.env.VITE_REACT_STRICT_MODE !== 'false';
 
@@ -147,6 +151,31 @@ const router = createBrowserRouter([
                             {
                                 path: "sdrs",
                                 Component: SettingsTabSDR,
+                            },
+                        ],
+                    },
+                    {
+                        path: "chemtrail",
+                        children: [
+                            {
+                                path: "cameras",
+                                Component: SettingsTabCamera,
+                            },
+                            {
+                                path: "detections",
+                                Component: DetectionTable,
+                            },
+                            {
+                                path: "flights",
+                                Component: FlightTable,
+                            },
+                            {
+                                path: "search",
+                                Component: ArchiveSearch,
+                            },
+                            {
+                                path: "status",
+                                Component: PipelineStatus,
                             },
                         ],
                     },
