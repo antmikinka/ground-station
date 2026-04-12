@@ -68,3 +68,6 @@ websockets==14.0
 wsproto==1.2.0
 yarl==1.20.0
 zeroconf==0.146.5
+
+# FR24 SDK for dual-source flight data
+fr24sdk>=1.0.0

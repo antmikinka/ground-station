@@ -27,6 +27,7 @@ from sqlalchemy import (
     Enum,
     Float,
     ForeignKey,
+    Index,
     Integer,
     MetaData,
     String,
@@ -351,6 +352,350 @@ class ObservationStatus(str, PyEnum):
     CANCELLED = "cancelled"
     FAILED = "failed"
     MISSED = "missed"
+
+
+# ============================================================================
+# CHEMTRAIL TRACKER MODELS
+# ============================================================================
+
+
+class DetectionType(str, PyEnum):
+    """Enum for detection types."""
+    CONTRAIL = "contrail"
+    AIRCRAFT = "aircraft"
+    UNKNOWN = "unknown"
+
+
+class ProcessingStatus(str, PyEnum):
+    """Enum for processing job status."""
+    PENDING = "pending"
+    PROCESSING = "processing"
+    COMPLETED = "completed"
+    FAILED = "failed"
+
+
+class ChemtrailCameras(Base):
+    """
+    Extended camera model with geolocalization metadata for contrail tracking.
+
+    Stores camera position, orientation, and optical characteristics needed
+    for azimuth/elevation calculations and triangulation.
+    """
+    __tablename__ = "chemtrail_cameras"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String, nullable=False)
+    url = Column(String, nullable=True)  # RTSP/MJPEG URL or API endpoint
+    type = Column(Enum(CameraType), nullable=False)
+
+    # Geolocation (required for triangulation)
+    latitude = Column(Float, nullable=False, index=True)
+    longitude = Column(Float, nullable=False, index=True)
+    altitude = Column(Float, nullable=False)  # meters AMSL
+
+    # Orientation (required for az/el calculation)
+    azimuth = Column(Float, nullable=False, default=0.0)  # 0-360 degrees
+    elevation = Column(Float, nullable=False, default=0.0)  # -90 to 90 degrees
+
+    # Optical characteristics
+    fov_horizontal = Column(Float, nullable=True)  # degrees
+    fov_vertical = Column(Float, nullable=True)  # degrees
+    image_width = Column(Integer, nullable=True)
+    image_height = Column(Integer, nullable=True)
+    lens_distortion = Column(JSON, nullable=True)  # {k1, k2, p1, p2}
+
+    # Operational
+    status = Column(String, nullable=False, default="inactive")  # active, inactive, error
+    last_image_at = Column(AwareDateTime, nullable=True)
+    extra_data = Column(JSON, nullable=True)  # Renamed from 'metadata' (SQLAlchemy reserved)
+
+    # Timestamps
+    created_at = Column(AwareDateTime, nullable=False, default=datetime.now(timezone.utc))
+    updated_at = Column(
+        AwareDateTime,
+        nullable=True,
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc)
+    )
+
+
+class VideoCatalog(Base):
+    """
+    Video catalog for Phase 2 footage management.
+
+    Stores metadata for all video sources (live webcams, historical files,
+    YouTube archives) with weather enrichment and quality scoring.
+    """
+    __tablename__ = "video_catalog"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    # Source identification
+    source_type = Column(String, nullable=False, index=True)  # webcam, local, youtube
+    source_url = Column(String, nullable=True)
+    local_path = Column(String, nullable=True)
+
+    # Camera linkage
+    camera_id = Column(UUID(as_uuid=True), nullable=True, index=True)
+    camera_name = Column(String, nullable=True)
+
+    # Location
+    latitude = Column(Float, nullable=False, index=True)
+    longitude = Column(Float, nullable=False, index=True)
+    altitude = Column(Float, nullable=False)
+
+    # Video properties
+    title = Column(String, nullable=True)
+    description = Column(String, nullable=True)
+    duration_seconds = Column(Float, nullable=False)
+    resolution = Column(String, nullable=False, default="unknown")  # 480p, 720p, 1080p, 4K
+    codec = Column(String, nullable=True)
+    file_size_bytes = Column(Integer, nullable=True)
+
+    # Quality scoring
+    quality_score = Column(Float, nullable=False, default=0.0, index=True)  # 0-100
+    quality_metrics = Column(JSON, nullable=True)  # {resolution_score, stability_score, lighting_score, sharpness_score}
+
+    # Temporal
+    recorded_at = Column(AwareDateTime, nullable=False, index=True)
+    ingested_at = Column(AwareDateTime, nullable=False, default=datetime.now(timezone.utc))
+
+    # Weather enrichment
+    weather_data = Column(JSON, nullable=True)  # {temperature, cloud_cover, visibility, wind_speed, etc.}
+
+    # Tags
+    tags = Column(JSON, nullable=True)  # Custom tags for organization
+
+    # Processing status
+    processing_status = Column(String, nullable=False, default="pending", index=True)
+    chunk_count = Column(Integer, nullable=False, default=0)
+    detection_count = Column(Integer, nullable=False, default=0)
+    error_message = Column(String, nullable=True)
+
+    # Checksum for deduplication
+    checksum_sha256 = Column(String, nullable=True, index=True)
+
+    # Timestamps
+    created_at = Column(AwareDateTime, nullable=False, default=datetime.now(timezone.utc))
+    updated_at = Column(
+        AwareDateTime,
+        nullable=True,
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc)
+    )
+
+    __table_args__ = (
+        # Composite index for common queries
+        Index("idx_video_catalog_camera_time", "camera_id", "recorded_at"),
+        Index("idx_video_catalog_quality", "quality_score", postgresql_using="btree"),
+        Index("idx_video_catalog_location", "latitude", "longitude"),
+    )
+
+
+class ChemtrailDetections(Base):
+    """
+    Core detection records linking cameras, flights, and observations.
+
+    Stores contrail/aircraft detections with image-space coordinates,
+    calculated azimuth/elevation, and estimated 3D position.
+    """
+    __tablename__ = "chemtrail_detections"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    # Foreign keys
+    camera_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("chemtrail_cameras.id"),
+        nullable=False,
+        index=True
+    )
+    icao24 = Column(
+        String,
+        ForeignKey("flight_cache.icao24"),
+        nullable=True,
+        index=True
+    )
+
+    # Detection type
+    detection_type = Column(Enum(DetectionType), nullable=False, index=True)
+
+    # Timing
+    timestamp = Column(AwareDateTime, nullable=False, index=True)
+    processing_latency_ms = Column(Integer, nullable=True)
+
+    # Image reference
+    image_path = Column(String, nullable=False)
+    image_hash = Column(String, nullable=True, index=True)  # For deduplication
+
+    # Detection location (image space)
+    pixel_x = Column(Float, nullable=False)
+    pixel_y = Column(Float, nullable=False)
+    bounding_box = Column(JSON, nullable=True)  # [x1, y1, x2, y2] for aircraft
+
+    # Calculated az/el from camera
+    azimuth = Column(Float, nullable=False)
+    elevation = Column(Float, nullable=False)
+
+    # Estimated 3D position (WGS84)
+    estimated_latitude = Column(Float, nullable=True, index=True)
+    estimated_longitude = Column(Float, nullable=True, index=True)
+    estimated_altitude = Column(Float, nullable=True)
+    position_method = Column(String, nullable=True)  # "single_camera", "triangulation", "flight_correlation"
+
+    # Detection quality
+    confidence = Column(Float, nullable=False)  # 0.0-1.0
+    correlation_score = Column(Float, nullable=True)  # 0.0-1.0 for flight match
+
+    # Contrail-specific data
+    contrail_vector = Column(JSON, nullable=True)  # {angle, length_px, width_px, persistence}
+
+    # Processing metadata
+    processing_metadata = Column(JSON, nullable=True)
+
+    # Timestamps
+    created_at = Column(AwareDateTime, nullable=False, default=datetime.now(timezone.utc))
+    updated_at = Column(
+        AwareDateTime,
+        nullable=True,
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc)
+    )
+
+    __table_args__ = (
+        # Compound index for time-range queries by camera
+        Index("idx_detections_camera_time", "camera_id", "timestamp"),
+    )
+
+
+class FlightCache(Base):
+    """
+    Cached flight data from OpenSky/FR24 APIs.
+
+    Stores recent flight positions and history for correlation with detections.
+    Supports dual-source data from both OpenSky and Flightradar24.
+    """
+    __tablename__ = "flight_cache"
+
+    icao24 = Column(String, primary_key=True, nullable=False)
+    callsign = Column(String, nullable=True, index=True)
+    registration = Column(String, nullable=True)
+    aircraft_type = Column(String, nullable=True)
+    origin = Column(String, nullable=True)  # OpenSky origin_country
+    destination = Column(String, nullable=True)
+
+    # FR24-specific fields
+    fr24_id = Column(String, nullable=True, index=True)  # FR24 flight ID
+    squawk = Column(String, nullable=True)  # Transponder code
+    vertical_rate = Column(Integer, nullable=True)  # Feet per minute
+    painted_as = Column(String, nullable=True)  # Airline ICAO (branding)
+    operating_as = Column(String, nullable=True)  # Airline ICAO (operator)
+    eta = Column(AwareDateTime, nullable=True)  # Estimated time of arrival
+
+    # FR24 airport codes (more detailed than origin/destination)
+    origin_icao = Column(String, nullable=True)
+    origin_iata = Column(String, nullable=True)
+    destination_icao = Column(String, nullable=True)
+    destination_iata = Column(String, nullable=True)
+
+    # Current position (updated from API)
+    position = Column(JSON, nullable=True)  # {lat, lon, alt, heading, velocity}
+    last_position_update = Column(AwareDateTime, nullable=True, index=True)
+
+    # Position history (for correlation with detections)
+    position_history = Column(JSON, nullable=True)  # Array of {timestamp, lat, lon, alt}
+
+    # Flight track data from FR24
+    flight_track = Column(JSON, nullable=True)  # Array of track points from FR24
+
+    # Raw API responses (for debugging/reprocessing)
+    raw_message = Column(JSON, nullable=True)  # OpenSky raw response
+    fr24_raw_message = Column(JSON, nullable=True)  # FR24 raw response
+
+    # Data source tracking
+    data_sources = Column(JSON, nullable=True)  # ["opensky", "fr24"] - which sources contributed
+
+    # Timestamps
+    first_seen = Column(AwareDateTime, nullable=False, default=datetime.now(timezone.utc))
+    updated_at = Column(
+        AwareDateTime,
+        nullable=True,
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc)
+    )
+
+
+class DetectionFrames(Base):
+    """
+    Time-series tracking data for moving detections (contrail evolution).
+    """
+    __tablename__ = "detection_frames"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    detection_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("chemtrail_detections.id"),
+        nullable=False,
+        index=True
+    )
+    frame_timestamp = Column(AwareDateTime, nullable=False, index=True)
+    frame_sequence = Column(Integer, nullable=False)
+
+    # Position in frame
+    pixel_x = Column(Float, nullable=False)
+    pixel_y = Column(Float, nullable=False)
+
+    # Motion data
+    velocity_x = Column(Float, nullable=True)
+    velocity_y = Column(Float, nullable=True)
+
+    # Blob/contour data (compressed)
+    blob_data = Column(JSON, nullable=True)
+
+    # Timestamp
+    created_at = Column(AwareDateTime, nullable=False, default=datetime.now(timezone.utc))
+
+    __table_args__ = (
+        # Optimized for time-range queries
+        Index("idx_frames_detection_time", "detection_id", "frame_timestamp"),
+    )
+
+
+class TriangulationResults(Base):
+    """
+    Results from multi-camera triangulation.
+    """
+    __tablename__ = "triangulation_results"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    # Linked detections
+    detection_1_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("chemtrail_detections.id"),
+        nullable=False
+    )
+    detection_2_id = Column(
+        UUID(as_uuid=True),
+        ForeignKey("chemtrail_detections.id"),
+        nullable=False
+    )
+
+    # Camera baseline
+    baseline_km = Column(Float, nullable=True)  # Distance between cameras
+
+    # Result
+    triangulated_latitude = Column(Float, nullable=False)
+    triangulated_longitude = Column(Float, nullable=False)
+    triangulated_altitude = Column(Float, nullable=False)
+    confidence = Column(Float, nullable=False)
+    intersection_angle = Column(Float, nullable=True)  # Quality metric
+
+    # Method
+    method = Column(String, nullable=False)  # "least_squares", "geometric", etc.
+
+    # Timestamp
+    created_at = Column(AwareDateTime, nullable=False, default=datetime.now(timezone.utc))
 
 
 class MonitoredSatellites(Base):
