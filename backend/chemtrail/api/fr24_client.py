@@ -15,7 +15,7 @@
 
 """Flightradar24 API client wrapper for chemtrail tracker."""
 
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, TYPE_CHECKING
 from datetime import datetime, timezone
 from dataclasses import dataclass
 
@@ -26,6 +26,9 @@ from fr24sdk.models.flight import (
     FlightTracks,
 )
 from fr24sdk.models.geographic import Boundary, AltitudeRange
+
+if TYPE_CHECKING:
+    from common.circuit_breaker import CircuitBreaker
 
 
 @dataclass
@@ -103,17 +106,29 @@ class FR24Client:
         positions = await asyncio.to_thread(
             client.get_live_positions, bounds={...}
         )
+
+        # With circuit breaker
+        cb = CircuitBreaker()
+        with FR24Client(api_token="token", circuit_breaker=cb) as client:
+            positions = client.get_live_positions()
     """
 
-    def __init__(self, api_token: Optional[str] = None):
+    def __init__(
+        self,
+        api_token: Optional[str] = None,
+        circuit_breaker: Optional["CircuitBreaker"] = None,
+    ):
         """
         Initialize FR24 client.
 
         Args:
             api_token: FR24 API token. If None, reads from FR24_API_TOKEN env var.
+            circuit_breaker: Optional CircuitBreaker instance for resilience.
+                If provided, all SDK calls will be wrapped with circuit breaker logic.
         """
         self._client: Optional[FR24BaseClient] = None
         self._api_token = api_token
+        self._circuit_breaker = circuit_breaker
 
     def __enter__(self) -> "FR24Client":
         self._client = FR24BaseClient(api_token=self._api_token)
@@ -145,6 +160,9 @@ class FR24Client:
 
         Returns:
             List of FR24FlightPosition objects
+
+        Raises:
+            CircuitOpenError: If circuit breaker is open
         """
         if not self._client:
             raise RuntimeError("Client not initialized. Use context manager.")
@@ -165,14 +183,20 @@ class FR24Client:
                 max_altitude=altitude_range["max_altitude"],
             )]
 
-        response = self._client.live.get_full(
-            bounds=boundary,
-            callsigns=callsigns,
-            registrations=registrations,
-            altitude_ranges=altitude_ranges,
-            gspeed=ground_speed,
-            limit=limit,
-        )
+        def _make_request():
+            return self._client.live.get_full(
+                bounds=boundary,
+                callsigns=callsigns,
+                registrations=registrations,
+                altitude_ranges=altitude_ranges,
+                gspeed=ground_speed,
+                limit=limit,
+            )
+
+        if self._circuit_breaker:
+            response = self._circuit_breaker.call(_make_request)
+        else:
+            response = _make_request()
 
         return [self._map_position(pos) for pos in (response.data or [])]
 
@@ -194,6 +218,9 @@ class FR24Client:
 
         Returns:
             List of FR24FlightPosition objects
+
+        Raises:
+            CircuitOpenError: If circuit breaker is open
         """
         if not self._client:
             raise RuntimeError("Client not initialized. Use context manager.")
@@ -207,12 +234,18 @@ class FR24Client:
                 east=bounds["east"],
             )
 
-        response = self._client.historic.get_full(
-            timestamp=timestamp,
-            bounds=boundary,
-            callsigns=callsigns,
-            limit=limit,
-        )
+        def _make_request():
+            return self._client.historic.get_full(
+                timestamp=timestamp,
+                bounds=boundary,
+                callsigns=callsigns,
+                limit=limit,
+            )
+
+        if self._circuit_breaker:
+            response = self._circuit_breaker.call(_make_request)
+        else:
+            response = _make_request()
 
         return [self._map_position(pos) for pos in (response.data or [])]
 
@@ -225,11 +258,20 @@ class FR24Client:
 
         Returns:
             FR24FlightTrack with list of track points
+
+        Raises:
+            CircuitOpenError: If circuit breaker is open
         """
         if not self._client:
             raise RuntimeError("Client not initialized. Use context manager.")
 
-        response = self._client.flight_tracks.get(flight_id=flight_id)
+        def _make_request():
+            return self._client.flight_tracks.get(flight_id=flight_id)
+
+        if self._circuit_breaker:
+            response = self._circuit_breaker.call(_make_request)
+        else:
+            response = _make_request()
 
         track_data = response.data[0] if response.data else None
         if not track_data:
@@ -272,17 +314,26 @@ class FR24Client:
 
         Returns:
             List of FR24FlightSummary objects
+
+        Raises:
+            CircuitOpenError: If circuit breaker is open
         """
         if not self._client:
             raise RuntimeError("Client not initialized. Use context manager.")
 
-        response = self._client.flight_summary.get_full(
-            flight_ids=flight_ids,
-            callsigns=callsigns,
-            flight_datetime_from=flight_datetime_from,
-            flight_datetime_to=flight_datetime_to,
-            limit=limit,
-        )
+        def _make_request():
+            return self._client.flight_summary.get_full(
+                flight_ids=flight_ids,
+                callsigns=callsigns,
+                flight_datetime_from=flight_datetime_from,
+                flight_datetime_to=flight_datetime_to,
+                limit=limit,
+            )
+
+        if self._circuit_breaker:
+            response = self._circuit_breaker.call(_make_request)
+        else:
+            response = _make_request()
 
         return [self._map_summary(summary) for summary in (response.data or [])]
 

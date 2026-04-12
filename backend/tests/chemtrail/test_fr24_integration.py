@@ -707,3 +707,297 @@ class TestCorrelationScore:
             flight_match, fr24_meta, 50.0, 0.0
         )
         assert score <= 1.0
+
+
+# ============================================================================
+# Structured Logging Tests
+# ============================================================================
+
+
+class TestStructuredLogging:
+    """Test structured logging functionality."""
+
+    def test_logging_context_creates_correlation_id(self):
+        """Test that LoggingContext generates a correlation ID."""
+        from common.fr24_logging import LoggingContext, get_correlation_id
+
+        with LoggingContext() as ctx:
+            assert "correlation_id" in ctx
+            assert "component" in ctx
+            assert ctx["component"] == "fr24_service"
+            assert get_correlation_id() == ctx["correlation_id"]
+
+    def test_logging_context_with_existing_id(self):
+        """Test that LoggingContext uses provided correlation ID."""
+        from common.fr24_logging import LoggingContext, get_correlation_id
+
+        existing_id = "test-correlation-123"
+        with LoggingContext(correlation_id=existing_id) as ctx:
+            assert ctx["correlation_id"] == existing_id
+            assert get_correlation_id() == existing_id
+
+    def test_logging_context_cleans_up(self):
+        """Test that correlation ID is cleaned up after context."""
+        from common.fr24_logging import LoggingContext, get_correlation_id
+
+        assert get_correlation_id() is None
+
+        with LoggingContext() as ctx:
+            assert get_correlation_id() == ctx["correlation_id"]
+
+        assert get_correlation_id() is None
+
+    @patch("common.fr24_logging.logger")
+    def test_log_fr24_request_success(self, mock_logger):
+        """Test logging a successful FR24 request."""
+        from common.fr24_logging import log_fr24_request
+
+        log_fr24_request(
+            method="GET",
+            endpoint="/live/positions",
+            hex_code="4b1a02",
+            latency_ms=150.5,
+            status_code=200,
+            success=True,
+        )
+
+        mock_logger.info.assert_called_once()
+        call_args = mock_logger.info.call_args
+        assert "FR24 GET /live/positions completed" in call_args[0][0]
+        extra = call_args[1]["extra"]
+        assert extra["method"] == "GET"
+        assert extra["hex_code"] == "4b1a02"
+        assert extra["latency_ms"] == 150.5
+        assert extra["status_code"] == 200
+        assert extra["success"] is True
+
+    @patch("common.fr24_logging.logger")
+    def test_log_fr24_request_failure(self, mock_logger):
+        """Test logging a failed FR24 request."""
+        from common.fr24_logging import log_fr24_request
+
+        log_fr24_request(
+            method="GET",
+            endpoint="/flight/tracks",
+            hex_code="abc123",
+            success=False,
+            error_message="Connection timeout",
+        )
+
+        mock_logger.error.assert_called_once()
+        call_args = mock_logger.error.call_args
+        extra = call_args[1]["extra"]
+        assert extra["success"] is False
+        assert extra["error_message"] == "Connection timeout"
+
+    @patch("common.fr24_logging.logger")
+    def test_log_fr24_enrichment_success(self, mock_logger):
+        """Test logging a successful enrichment operation."""
+        from common.fr24_logging import log_fr24_enrichment
+
+        log_fr24_enrichment(
+            icao24="4b1a02",
+            fields_enriched=["fr24_id", "flight_number", "origin_icao"],
+            duration_ms=250.0,
+            source="fr24",
+            success=True,
+        )
+
+        mock_logger.info.assert_called_once()
+        call_args = mock_logger.info.call_args
+        extra = call_args[1]["extra"]
+        assert extra["icao24"] == "4b1a02"
+        assert extra["fields_enriched"] == ["fr24_id", "flight_number", "origin_icao"]
+        assert extra["fields_count"] == 3
+        assert extra["duration_ms"] == 250.0
+        assert extra["success"] is True
+
+    @patch("common.fr24_logging.logger")
+    def test_log_rate_limit_event(self, mock_logger):
+        """Test logging a rate limit event."""
+        from common.fr24_logging import log_rate_limit_event
+
+        log_rate_limit_event(
+            event_type="sleeping",
+            current_count=60,
+            limit=60,
+            window_seconds=60.0,
+            sleep_time=2.5,
+        )
+
+        mock_logger.warning.assert_called_once()
+        call_args = mock_logger.warning.call_args
+        extra = call_args[1]["extra"]
+        assert extra["current_count"] == 60
+        assert extra["rate_limit"] == 60
+        assert extra["sleep_time_seconds"] == 2.5
+
+
+# ============================================================================
+# Rate Limit Persistence Tests
+# ============================================================================
+
+
+class TestRateLimitPersistence:
+    """Test rate limit persistence functionality."""
+
+    @pytest.fixture
+    def mock_session(self):
+        """Create a mock SQLAlchemy session."""
+        session = MagicMock()
+        return session
+
+    @patch("db.models.ServiceState")
+    @patch("chemtrail.services.fr24_flight_service.FR24Config.from_env")
+    def test_load_rate_limit_state_empty_db(self, mock_from_env, mock_service_state, mock_session):
+        """Test loading rate limit state when DB is empty."""
+        from chemtrail.services.fr24_flight_service import FR24FlightService
+
+        mock_from_env.return_value = MagicMock(
+            api_token="test",
+            rate_limit=60,
+            enrichment_limit=50,
+            cache_ttl=300,
+            timeout=30,
+            max_retries=3,
+            rate_limit_window=60.0,
+        )
+
+        # Mock empty query result
+        mock_query = MagicMock()
+        mock_session.query.return_value.filter.return_value.first.return_value = None
+
+        service = FR24FlightService(session=mock_session)
+
+        # Should have empty timestamps
+        assert service._request_timestamps == []
+
+    @patch("db.models.ServiceState")
+    @patch("chemtrail.services.fr24_flight_service.FR24Config.from_env")
+    def test_load_rate_limit_state_with_data(self, mock_from_env, mock_service_state, mock_session):
+        """Test loading rate limit state from DB with existing data."""
+        from chemtrail.services.fr24_flight_service import FR24FlightService
+        import time
+
+        mock_from_env.return_value = MagicMock(
+            api_token="test",
+            rate_limit=60,
+            rate_limit_window=60.0,
+        )
+
+        # Create mock state with recent timestamps
+        now = time.monotonic()
+        mock_state = MagicMock()
+        mock_state.state_data = {
+            "timestamps": [now - 10, now - 20, now - 30]
+        }
+
+        mock_session.query.return_value.filter.return_value.first.return_value = mock_state
+
+        service = FR24FlightService(session=mock_session)
+
+        # Should have loaded 3 timestamps
+        assert len(service._request_timestamps) == 3
+
+    @patch("db.models.ServiceState")
+    @patch("chemtrail.services.fr24_flight_service.FR24Config.from_env")
+    def test_load_rate_limit_state_filters_expired(self, mock_from_env, mock_service_state, mock_session):
+        """Test that expired timestamps are filtered on load."""
+        from chemtrail.services.fr24_flight_service import FR24FlightService
+        import time
+
+        mock_from_env.return_value = MagicMock(
+            api_token="test",
+            rate_limit=60,
+            rate_limit_window=60.0,
+        )
+
+        # Create mock state with mix of recent and expired timestamps
+        now = time.monotonic()
+        mock_state = MagicMock()
+        mock_state.state_data = {
+            "timestamps": [
+                now - 10,  # Recent
+                now - 30,  # Recent
+                now - 100,  # Expired (older than 60s window)
+            ]
+        }
+
+        mock_session.query.return_value.filter.return_value.first.return_value = mock_state
+
+        service = FR24FlightService(session=mock_session)
+
+        # Should only have 2 recent timestamps
+        assert len(service._request_timestamps) == 2
+
+    @patch("db.models.ServiceState")
+    @patch("chemtrail.services.fr24_flight_service.FR24Config.from_env")
+    def test_save_rate_limit_state_new(self, mock_from_env, mock_service_state, mock_session):
+        """Test saving rate limit state when no record exists."""
+        from chemtrail.services.fr24_flight_service import FR24FlightService
+
+        mock_from_env.return_value = MagicMock(
+            api_token="test",
+            rate_limit=60,
+            rate_limit_window=60.0,
+        )
+
+        mock_session.query.return_value.filter.return_value.first.return_value = None
+
+        service = FR24FlightService(session=mock_session)
+        service._request_timestamps = [1.0, 2.0, 3.0]
+        service._save_rate_limit_state()
+
+        # Should have created new record
+        mock_session.add.assert_called_once()
+        mock_session.commit.assert_called_once()
+
+    @patch("db.models.ServiceState")
+    @patch("chemtrail.services.fr24_flight_service.FR24Config.from_env")
+    def test_save_rate_limit_state_update(self, mock_from_env, mock_service_state, mock_session):
+        """Test updating existing rate limit state record."""
+        from chemtrail.services.fr24_flight_service import FR24FlightService
+
+        mock_from_env.return_value = MagicMock(
+            api_token="test",
+            rate_limit=60,
+            rate_limit_window=60.0,
+        )
+
+        mock_state = MagicMock()
+        mock_state.state_data = {"timestamps": [1.0]}
+        mock_session.query.return_value.filter.return_value.first.return_value = mock_state
+
+        service = FR24FlightService(session=mock_session)
+        service._request_timestamps = [1.0, 2.0, 3.0]
+        service._save_rate_limit_state()
+
+        # Should have updated existing record
+        assert mock_state.state_data["timestamps"] == [1.0, 2.0, 3.0]
+        mock_session.commit.assert_called_once()
+        mock_session.add.assert_not_called()
+
+    @patch("db.models.ServiceState")
+    @patch("chemtrail.services.fr24_flight_service.FR24Config.from_env")
+    def test_enforce_rate_limit_persists_state(self, mock_from_env, mock_service_state, mock_session):
+        """Test that _enforce_rate_limit persists state after adding timestamp."""
+        from chemtrail.services.fr24_flight_service import FR24FlightService
+
+        mock_from_env.return_value = MagicMock(
+            api_token="test",
+            rate_limit=60,
+            rate_limit_window=60.0,
+        )
+
+        mock_session.query.return_value.filter.return_value.first.return_value = None
+
+        service = FR24FlightService(session=mock_session)
+        initial_count = len(service._request_timestamps)
+
+        service._enforce_rate_limit()
+
+        # Should have added one timestamp
+        assert len(service._request_timestamps) == initial_count + 1
+
+        # Should have persisted state
+        mock_session.commit.assert_called()

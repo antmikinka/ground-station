@@ -812,3 +812,31 @@ class ScheduledObservations(Base):
         default=datetime.now(timezone.utc),
         onupdate=datetime.now(timezone.utc),
     )
+
+
+class ServiceState(Base):
+    """
+    Service state persistence for maintaining state across service restarts.
+
+    Stores operational state data for various backend services, including
+    rate limiting state, cache metadata, and other service-level information
+    that needs to persist beyond process lifetime.
+
+    Example usage:
+        - FR24 rate limit state: stores request timestamps for rate limiting
+        - External API state: stores pagination cursors, sync tokens, etc.
+        - Processing checkpoints: stores last processed timestamps/IDs
+    """
+
+    __tablename__ = "service_state"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    service_name = Column(String, nullable=False, unique=True, index=True)
+    state_data = Column(JSON, nullable=False, default=dict)
+    created_at = Column(AwareDateTime, nullable=False, default=datetime.now(timezone.utc))
+    updated_at = Column(
+        AwareDateTime,
+        nullable=False,
+        default=datetime.now(timezone.utc),
+        onupdate=datetime.now(timezone.utc),
+    )
