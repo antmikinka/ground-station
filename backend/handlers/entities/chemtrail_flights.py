@@ -221,6 +221,40 @@ async def get_fr24_metrics(
         return {"success": False, "data": {}, "error": str(e)}
 
 
+async def get_flm_status(
+    sio: Any,
+    data: Optional[Dict],
+    logger: Any,
+    sid: str
+) -> Dict[str, Any]:
+    """Get FLM (FastFlowLM) server status."""
+    try:
+        logger.debug("Getting FLM server status")
+
+        # Import here to avoid circular imports
+        from chemtrail.archive.flm_embedder import FLMConfig, FLMEmbedder
+
+        config = FLMConfig.from_env()
+        embedder = FLMEmbedder(config)
+        model_info = embedder.get_model_info()
+        embedder.close()
+
+        return {"success": True, "data": model_info}
+
+    except Exception as e:
+        logger.error(f"Error getting FLM status: {e}")
+        return {
+            "success": True,
+            "data": {
+                "server_connected": False,
+                "embedding_model": os.environ.get("FLM_EMBEDDING_MODEL", "embed-gemma:300m"),
+                "vision_model": os.environ.get("FLM_VISION_MODEL", "qwen3vl-it:4b"),
+                "available_models": [],
+                "error": str(e),
+            }
+        }
+
+
 def register_handlers(registry):
     """Register flight handlers with the command registry."""
     registry.register_batch(
@@ -230,5 +264,6 @@ def register_handlers(registry):
             "get-flight-track": (get_flight_track, "data_request"),
             "get-fr24-health": (get_fr24_health, "data_request"),
             "get-fr24-metrics": (get_fr24_metrics, "data_request"),
+            "get-flm-status": (get_flm_status, "data_request"),
         }
     )

@@ -115,6 +115,25 @@ export const fetchFR24Metrics = createAsyncThunk(
     }
 );
 
+export const fetchFLMStatus = createAsyncThunk(
+    'chemtrailFlights/fetchFLMStatus',
+    async ({ socket }, { rejectWithValue }) => {
+        try {
+            return await new Promise((resolve, reject) => {
+                socket.emit('data_request', 'get-flm-status', null, (res) => {
+                    if (res.success) {
+                        resolve(res.data);
+                    } else {
+                        reject(new Error(res.error || 'Failed to fetch FLM status'));
+                    }
+                });
+            });
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
 const flightsSlice = createSlice({
     name: 'chemtrailFlights',
     initialState: {
@@ -133,6 +152,13 @@ const flightsSlice = createSlice({
             averageLatency: 0,
             cacheHits: 0,
             cacheMisses: 0,
+        },
+        flmStatus: {
+            serverConnected: false,
+            embeddingModel: 'embed-gemma:300m',
+            visionModel: 'qwen3vl-it:4b',
+            availableModels: [],
+            error: null,
         },
         loading: false,
         error: null,
@@ -154,6 +180,9 @@ const flightsSlice = createSlice({
         },
         setFR24Metrics: (state, action) => {
             state.fr24Metrics = action.payload;
+        },
+        setFLMStatus: (state, action) => {
+            state.flmStatus = action.payload;
         },
         setLoading: (state, action) => {
             state.loading = action.payload;
@@ -250,6 +279,26 @@ const flightsSlice = createSlice({
             .addCase(fetchFR24Metrics.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            // Fetch FLM status
+            .addCase(fetchFLMStatus.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchFLMStatus.fulfilled, (state, action) => {
+                state.loading = false;
+                state.flmStatus = action.payload;
+            })
+            .addCase(fetchFLMStatus.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+                state.flmStatus = {
+                    serverConnected: false,
+                    embeddingModel: 'embed-gemma:300m',
+                    visionModel: 'qwen3vl-it:4b',
+                    availableModels: [],
+                    error: action.payload,
+                };
             });
     },
 });
@@ -260,6 +309,7 @@ export const {
     setFlightTrack,
     setFR24Health,
     setFR24Metrics,
+    setFLMStatus,
     setLoading,
     setError,
     setStatus,

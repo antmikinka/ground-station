@@ -1,15 +1,41 @@
 # Chemtrail Webcam Tracker - Where to Resume
 
-**Document Version:** 4.0
+**Document Version:** 4.1
 **Date:** 2026-04-11
 **Author:** Recursive Iterative Pipeline (Planning -> PM -> Dev -> QA -> Review -> Docs -> UI)
-**Status:** UI INTEGRATION COMPLETE - All commits pushed to remote
+**Status:** FLM LOCAL MODEL INTEGRATION COMPLETE
 
 ---
 
 ## Executive Summary
 
 The FR24 SDK integration, all P2 production readiness items, and full UI/UX integration are **complete and pushed to remote**. The Chemtrail Webcam Tracker now has a complete frontend with camera management, detection browsing, live flight tracking, archive search, and pipeline status monitoring.
+
+### FLM Local Model Integration (NEW - v4.1)
+
+Added support for local model inference using FLM (FastFlowLM) server on AMD Ryzen AI NPU:
+
+| Component | Description |
+|-----------|-------------|
+| `backend/chemtrail/archive/flm_embedder.py` | OpenAI-compatible embedder using FLM server |
+| `backend/chemtrail/archive/embedder.py` | Updated factory with "flm" backend support |
+| `backend/common/appconfig.py` | FLM configuration support |
+| `backend/handlers/entities/chemtrail_flights.py` | FLM status handler |
+| `frontend/src/components/chemtrail/status/pipeline-status.jsx` | FLM/NPU status dashboard |
+
+**Models available:**
+- `qwen3vl-it:4b` - Qwen3-VL 4B for vision-language (frame description)
+- `embed-gemma:300m` - EmbeddingGemma for 768-dim text embeddings
+
+**Environment variables:**
+```bash
+FLM_BASE_URL=http://localhost:8080
+FLM_EMBEDDING_MODEL=embed-gemma:300m
+FLM_VISION_MODEL=qwen3vl-it:4b
+FLM_DIMENSIONS=768
+FLM_TIMEOUT=30.0
+EMBEDDER_BACKEND=flm  # Set to "flm" for local NPU embedding
+```
 
 ### Commits on `chemtrail-webcam-tracker`
 
@@ -63,6 +89,10 @@ The FR24 SDK integration, all P2 production readiness items, and full UI/UX inte
 | `backend/chemtrail/archive/vector_store.py` | ChromaDB vector store |
 | `backend/chemtrail/archive/searcher.py` | Natural language search |
 | `backend/chemtrail/archive/telemetry_overlay.py` | HUD overlay with flight data |
+| `backend/chemtrail/archive/flm_embedder.py` | FLM local embedder (AMD Ryzen AI NPU) |
+| `backend/chemtrail/archive/embedder.py` | Embedder factory (gemini/flm/local backends) |
+| `backend/chemtrail/archive/base_embedder.py` | Abstract base class for embedders |
+| `backend/chemtrail/archive/gemini_embedder.py` | Gemini API embedder |
 | `backend/chemtrail/cv/contrail_detector.py` | CLAHE+Canny+Hough contrail detection |
 | `backend/chemtrail/sources/webcam_manager.py` | Webcam discovery + capture |
 | `backend/chemtrail/sources/pipeline_orchestrator.py` | End-to-end pipeline orchestration |
@@ -78,7 +108,7 @@ The FR24 SDK integration, all P2 production readiness items, and full UI/UX inte
 | File | Purpose |
 |------|---------|
 | `backend/handlers/entities/chemtrail_detections.py` | Socket.IO handlers: CRUD + archive search |
-| `backend/handlers/entities/chemtrail_flights.py` | Socket.IO handlers: live flights, details, FR24 health/metrics |
+| `backend/handlers/entities/chemtrail_flights.py` | Socket.IO handlers: live flights, details, FR24 health/metrics, FLM status |
 | `backend/handlers/entities/chemtrail_cameras.py` | Socket.IO handlers: camera CRUD |
 
 ### Backend - Database

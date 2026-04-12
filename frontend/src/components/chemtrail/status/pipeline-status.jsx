@@ -37,7 +37,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useSocket } from '../../common/socket.jsx';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchFR24Health, fetchFR24Metrics } from './flights-slice.js';
+import { fetchFR24Health, fetchFR24Metrics, fetchFLMStatus } from './flights-slice.js';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import DataUsageIcon from '@mui/icons-material/DataUsage';
 import SpeedIcon from '@mui/icons-material/Speed';
@@ -47,6 +47,8 @@ import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
 import HelpIcon from '@mui/icons-material/Help';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import ChipIcon from '@mui/icons-material/Chip';
+import MemoryIcon from '@mui/icons-material/Memory';
 import IconButton from '@mui/material/IconButton';
 
 export default function PipelineStatus() {
@@ -57,6 +59,7 @@ export default function PipelineStatus() {
     const {
         fr24Health,
         fr24Metrics,
+        flmStatus,
         loading,
         error,
     } = useSelector((state) => state.chemtrailFlights);
@@ -64,6 +67,7 @@ export default function PipelineStatus() {
     const handleRefresh = () => {
         dispatch(fetchFR24Health({ socket }));
         dispatch(fetchFR24Metrics({ socket }));
+        dispatch(fetchFLMStatus({ socket }));
     };
 
     useEffect(() => {
@@ -368,6 +372,119 @@ export default function PipelineStatus() {
                                     </Typography>
                                 </Box>
                             </Stack>
+                        </CardContent>
+                    </Card>
+                </Grid>
+
+                {/* FLM/NPU Status */}
+                <Grid item xs={12}>
+                    <Card>
+                        <CardContent>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                                <MemoryIcon color="secondary" />
+                                <Typography variant="h6">
+                                    FLM Server & AMD Ryzen AI NPU
+                                </Typography>
+                            </Box>
+
+                            <Grid container spacing={2}>
+                                {/* Server Connection Status */}
+                                <Grid item xs={12} md={4}>
+                                    <Box
+                                        sx={{
+                                            p: 2,
+                                            bgcolor: 'action.hover',
+                                            borderRadius: 1,
+                                            textAlign: 'center',
+                                        }}
+                                    >
+                                        <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                            Server Connection
+                                        </Typography>
+                                        <Chip
+                                            icon={flmStatus.serverConnected ? <CheckCircleIcon /> : <ErrorIcon />}
+                                            label={flmStatus.serverConnected ? 'Connected' : 'Disconnected'}
+                                            color={flmStatus.serverConnected ? 'success' : 'error'}
+                                            variant="filled"
+                                        />
+                                        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                                            {flmStatus.serverConnected ? flmStatus.availableModels?.length + ' models available' : 'FLM server unavailable'}
+                                        </Typography>
+                                    </Box>
+                                </Grid>
+
+                                {/* Embedding Model */}
+                                <Grid item xs={12} md={4}>
+                                    <Box
+                                        sx={{
+                                            p: 2,
+                                            bgcolor: 'action.hover',
+                                            borderRadius: 1,
+                                            textAlign: 'center',
+                                        }}
+                                    >
+                                        <ChipIcon sx={{ mb: 1, color: 'info.main' }} />
+                                        <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                            Embedding Model
+                                        </Typography>
+                                        <Typography variant="body2" fontWeight="medium">
+                                            {flmStatus.embeddingModel || 'embed-gemma:300m'}
+                                        </Typography>
+                                        <Typography variant="caption" color="text.secondary">
+                                            768 dimensions
+                                        </Typography>
+                                    </Box>
+                                </Grid>
+
+                                {/* Vision Model */}
+                                <Grid item xs={12} md={4}>
+                                    <Box
+                                        sx={{
+                                            p: 2,
+                                            bgcolor: 'action.hover',
+                                            borderRadius: 1,
+                                            textAlign: 'center',
+                                        }}
+                                    >
+                                        <MemoryIcon sx={{ mb: 1, color: 'primary.main' }} />
+                                        <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                                            Vision Model
+                                        </Typography>
+                                        <Typography variant="body2" fontWeight="medium">
+                                            {flmStatus.visionModel || 'qwen3vl-it:4b'}
+                                        </Typography>
+                                        <Typography variant="caption" color="text.secondary">
+                                            AMD Ryzen AI NPU
+                                        </Typography>
+                                    </Box>
+                                </Grid>
+                            </Grid>
+
+                            {/* Error Display */}
+                            {flmStatus.error && (
+                                <Alert severity="error" sx={{ mt: 2 }}>
+                                    {flmStatus.error}
+                                </Alert>
+                            )}
+
+                            {/* Available Models List */}
+                            {flmStatus.serverConnected && flmStatus.availableModels && flmStatus.availableModels.length > 0 && (
+                                <Box sx={{ mt: 2 }}>
+                                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+                                        Available Models:
+                                    </Typography>
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                        {flmStatus.availableModels.map((model) => (
+                                            <Chip
+                                                key={model}
+                                                label={model}
+                                                size="small"
+                                                variant="outlined"
+                                            />
+                                        ))}
+                                    </Box>
+                                </Box>
+                            )}
                         </CardContent>
                     </Card>
                 </Grid>

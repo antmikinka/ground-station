@@ -33,6 +33,9 @@ def get_embedder(backend: str = "gemini", **kwargs) -> BaseEmbedder:
         if backend == "gemini":
             from .gemini_embedder import GeminiEmbedder
             _current_embedder = GeminiEmbedder()
+        elif backend == "flm":
+            from .flm_embedder import FLMEmbedder
+            _current_embedder = FLMEmbedder()
         elif backend == "local":
             raise NotImplementedError(
                 "Local embedding (Qwen3-VL) requires optional dependencies: "
