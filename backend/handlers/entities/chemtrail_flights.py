@@ -227,9 +227,9 @@ async def get_flm_status(
     logger: Any,
     sid: str
 ) -> Dict[str, Any]:
-    """Get FLM (FastFlowLM) server status."""
+    """Get Lemonade Server / FLM NPU status."""
     try:
-        logger.debug("Getting FLM server status")
+        logger.debug("Getting Lemonade Server status")
 
         # Import here to avoid circular imports
         from chemtrail.archive.flm_embedder import FLMConfig, FLMEmbedder
@@ -242,13 +242,13 @@ async def get_flm_status(
         return {"success": True, "data": model_info}
 
     except Exception as e:
-        logger.error(f"Error getting FLM status: {e}")
+        logger.error(f"Error getting Lemonade status: {e}")
         return {
             "success": True,
             "data": {
                 "server_connected": False,
-                "embedding_model": os.environ.get("FLM_EMBEDDING_MODEL", "embed-gemma:300m"),
-                "vision_model": os.environ.get("FLM_VISION_MODEL", "qwen3vl-it:4b"),
+                "embedding_model": os.environ.get("FLM_EMBEDDING_MODEL", "nomic-embed-text-v2-moe-GGUF"),
+                "vision_model": os.environ.get("FLM_VISION_MODEL", "qwen3vl-it-4b-FLM"),
                 "available_models": [],
                 "error": str(e),
             }

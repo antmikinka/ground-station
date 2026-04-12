@@ -13,10 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-"""FLM (FastFlowLM) embedder for local model inference on AMD Ryzen AI NPU.
+"""Lemonade Server embedder for local model inference on AMD Ryzen AI NPU.
 
-Uses OpenAI-compatible API endpoints on the local FLM server for
-vision-language tasks (Qwen3-VL) and text embeddings (EmbeddingGemma).
+Uses Lemonade Server's OpenAI-compatible API, which routes inference to
+FLM (FastFlowLM) for NPU-accelerated vision-language tasks (Qwen3-VL)
+and text embeddings (nomic-embed-text / Qwen3-Embedding).
 """
 
 import base64
@@ -31,11 +32,15 @@ from common.common import logger
 
 @dataclass
 class FLMConfig:
-    """Configuration for FLM server connection and models."""
+    """Configuration for Lemonade Server connection and models.
 
-    base_url: str = "http://localhost:8080"
-    embedding_model: str = "embed-gemma:300m"
-    vision_model: str = "qwen3vl-it:4b"
+    Lemonade Server manages FLM as the NPU backend. Default port is 8000
+    (Lemonade router), not 8080 (direct FLM).
+    """
+
+    base_url: str = "http://localhost:8000"
+    embedding_model: str = "nomic-embed-text-v2-moe-GGUF"
+    vision_model: str = "qwen3vl-it-4b-FLM"
     dimensions: int = 768
     timeout: float = 30.0
 
@@ -44,19 +49,20 @@ class FLMConfig:
         """Load configuration from environment variables."""
         import os
         return cls(
-            base_url=os.environ.get("FLM_BASE_URL", "http://localhost:8080"),
-            embedding_model=os.environ.get("FLM_EMBEDDING_MODEL", "embed-gemma:300m"),
-            vision_model=os.environ.get("FLM_VISION_MODEL", "qwen3vl-it:4b"),
+            base_url=os.environ.get("FLM_BASE_URL", "http://localhost:8000"),
+            embedding_model=os.environ.get("FLM_EMBEDDING_MODEL", "nomic-embed-text-v2-moe-GGUF"),
+            vision_model=os.environ.get("FLM_VISION_MODEL", "qwen3vl-it-4b-FLM"),
             dimensions=int(os.environ.get("FLM_DIMENSIONS", 768)),
             timeout=float(os.environ.get("FLM_TIMEOUT", 30.0)),
         )
 
 
 class FLMEmbedder(BaseEmbedder):
-    """Local embedder using FLM server on AMD Ryzen AI NPU.
+    """Local embedder using Lemonade Server with FLM NPU backend.
 
+    Lemonade Server routes inference to FLM on the AMD Ryzen AI NPU.
     Uses Qwen3-VL for vision-language tasks (frame description) and
-    EmbeddingGemma for text embeddings. Video chunks are embedded by
+    nomic-embed-text for text embeddings. Video chunks are embedded by
     extracting the middle frame, describing it with Qwen3-VL, and
     embedding the resulting text description.
     """
@@ -67,19 +73,19 @@ class FLMEmbedder(BaseEmbedder):
         self._verify_connection()
 
     def _verify_connection(self):
-        """Verify FLM server is accessible and models are available."""
+        """Verify Lemonade Server is accessible and models are available."""
         try:
             resp = self._client.get("/v1/models")
             resp.raise_for_status()
             models = resp.json().get("data", [])
             model_ids = [m["id"] for m in models]
-            logger.info(f"FLM server connected. Available models: {model_ids}")
+            logger.info(f"Lemonade Server connected. Available models: {model_ids}")
             if self.config.embedding_model not in model_ids:
-                logger.warning(f"Embedding model '{self.config.embedding_model}' not found on FLM server")
+                logger.warning(f"Embedding model '{self.config.embedding_model}' not found on Lemonade Server")
             if self.config.vision_model not in model_ids:
-                logger.warning(f"Vision model '{self.config.vision_model}' not found on FLM server")
+                logger.warning(f"Vision model '{self.config.vision_model}' not found on Lemonade Server")
         except Exception as e:
-            logger.error(f"FLM server connection failed: {e}")
+            logger.error(f"Lemonade Server connection failed: {e}")
             raise
 
     def embed_video_chunk(self, chunk_path: str, verbose: bool = False) -> List[float]:
@@ -146,7 +152,7 @@ class FLMEmbedder(BaseEmbedder):
         return resp.json()["choices"][0]["message"]["content"]
 
     def embed_query(self, query_text: str, verbose: bool = False) -> List[float]:
-        """Get embedding for text query using EmbeddingGemma on NPU.
+        """Get embedding for text query using nomic-embed-text via Lemonade Server.
 
         Args:
             query_text: Text to embed.

@@ -376,14 +376,14 @@ export default function PipelineStatus() {
                     </Card>
                 </Grid>
 
-                {/* FLM/NPU Status */}
+                {/* Lemonade Server / NPU Status */}
                 <Grid item xs={12}>
                     <Card>
                         <CardContent>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                                 <MemoryIcon color="secondary" />
                                 <Typography variant="h6">
-                                    FLM Server & AMD Ryzen AI NPU
+                                    Lemonade Server & AMD Ryzen AI NPU
                                 </Typography>
                             </Box>
 
@@ -408,7 +408,7 @@ export default function PipelineStatus() {
                                             variant="filled"
                                         />
                                         <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                                            {flmStatus.serverConnected ? flmStatus.availableModels?.length + ' models available' : 'FLM server unavailable'}
+                                            {flmStatus.serverConnected ? flmStatus.availableModels?.length + ' models available' : 'Lemonade server unavailable'}
                                         </Typography>
                                     </Box>
                                 </Grid>
@@ -428,7 +428,7 @@ export default function PipelineStatus() {
                                             Embedding Model
                                         </Typography>
                                         <Typography variant="body2" fontWeight="medium">
-                                            {flmStatus.embeddingModel || 'embed-gemma:300m'}
+                                            {flmStatus.embeddingModel || 'nomic-embed-text-v2-moe-GGUF'}
                                         </Typography>
                                         <Typography variant="caption" color="text.secondary">
                                             768 dimensions
@@ -451,7 +451,7 @@ export default function PipelineStatus() {
                                             Vision Model
                                         </Typography>
                                         <Typography variant="body2" fontWeight="medium">
-                                            {flmStatus.visionModel || 'qwen3vl-it:4b'}
+                                            {flmStatus.visionModel || 'qwen3vl-it-4b-FLM'}
                                         </Typography>
                                         <Typography variant="caption" color="text.secondary">
                                             AMD Ryzen AI NPU
