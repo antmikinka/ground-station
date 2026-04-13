@@ -358,6 +358,7 @@ export default function DetectionTable() {
                     dispatch(clearSelectedDetection());
                 }}
                 detection={selectedDetection}
+                socket={socket}
             />
 
             {/* Delete Confirmation Dialog */}

@@ -248,6 +248,11 @@ app.mount(
     "/transcriptions", StaticFiles(directory=transcriptions_dir, html=False), name="transcriptions"
 )
 
+# Mount chemtrail detection images
+detections_dir = os.path.join(backend_dir, "..", "data", "chemtrail_samples", "visualizations")
+os.makedirs(detections_dir, exist_ok=True)
+app.mount("/chemtrail-detections", StaticFiles(directory=detections_dir, html=True), name="chemtrail-detections")
+
 
 # Add the version API endpoint BEFORE the catch-all route
 @app.get("/api/version")

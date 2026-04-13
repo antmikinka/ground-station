@@ -17,7 +17,7 @@
  *
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -34,15 +34,50 @@ import {
     TableCell,
     TableRow,
     LinearProgress,
+    Card,
+    CardMedia,
+    Skeleton,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import FlightIcon from '@mui/icons-material/Flight';
 import RadarIcon from '@mui/icons-material/Radar';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import StraightenIcon from '@mui/icons-material/Straighten';
+import ImageNotSupportedIcon from '@mui/icons-material/ImageNotSupported';
 
-export default function DetectionDetailDialog({ open, onClose, detection }) {
+export default function DetectionDetailDialog({ open, onClose, detection, socket }) {
     const { t } = useTranslation('chemtrail');
+    const [imageData, setImageData] = useState(null);
+    const [imageLoading, setImageLoading] = useState(false);
+
+    // Fetch detection image when dialog opens
+    useEffect(() => {
+        if (!open || !detection || !socket) return;
+
+        setImageData(null);
+        setImageLoading(true);
+
+        // Determine source: pipeline detection (video_name + chunk_index) or database detection (id)
+        const requestData = {};
+        if (detection.video_name && detection.chunk_index !== undefined) {
+            requestData.video_name = detection.video_name;
+            requestData.chunk_index = detection.chunk_index;
+        } else if (detection.id) {
+            requestData.id = detection.id;
+        }
+
+        if (Object.keys(requestData).length === 0) {
+            setImageLoading(false);
+            return;
+        }
+
+        socket.emit('get-detection-image', requestData, (response) => {
+            setImageLoading(false);
+            if (response?.success && response.data) {
+                setImageData(`data:image/jpeg;base64,${response.data}`);
+            }
+        });
+    }, [open, detection, socket]);
 
     if (!detection) return null;
 
@@ -78,6 +113,42 @@ export default function DetectionDetailDialog({ open, onClose, detection }) {
                 </Box>
             </DialogTitle>
             <DialogContent dividers>
+                {/* Detection Image */}
+                <Box sx={{ mb: 3 }}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                        <RadarIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5 }} />
+                        {t('detail.section_image')}
+                    </Typography>
+                    {imageLoading ? (
+                        <Skeleton variant="rectangular" width="100%" height={300} sx={{ borderRadius: 1 }} />
+                    ) : imageData ? (
+                        <Card sx={{ overflow: 'hidden' }}>
+                            <CardMedia
+                                component="img"
+                                image={imageData}
+                                alt="Detection overlay"
+                                sx={{ maxHeight: 400, objectFit: 'contain', bgcolor: '#000' }}
+                            />
+                            <Box sx={{ p: 1, bgcolor: 'action.hover', display: 'flex', gap: 1, alignItems: 'center', fontSize: '0.75rem' }}>
+                                <Chip label="GREEN=contrail" size="small" sx={{ height: 20, fontSize: '0.65rem', bgcolor: '#1b5e20', color: '#a5d6a7' }} />
+                                <Chip label="RED=endpoints" size="small" sx={{ height: 20, fontSize: '0.65rem', bgcolor: '#b71c1c', color: '#ef9a9a' }} />
+                                {detection.video_name && (
+                                    <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                                        {detection.video_name} • chunk {detection.chunk_index}
+                                    </Typography>
+                                )}
+                            </Box>
+                        </Card>
+                    ) : (
+                        <Box sx={{ p: 3, textAlign: 'center', bgcolor: 'action.hover', borderRadius: 1 }}>
+                            <ImageNotSupportedIcon sx={{ fontSize: 48, color: 'text.disabled' }} />
+                            <Typography variant="body2" color="text.disabled" sx={{ mt: 1 }}>
+                                {t('detail.no_image')}
+                            </Typography>
+                        </Box>
+                    )}
+                </Box>
+
                 {/* Detection Metadata */}
                 <Box sx={{ mb: 3 }}>
                     <Typography variant="subtitle2" color="text.secondary" gutterBottom>

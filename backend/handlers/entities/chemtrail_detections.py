@@ -15,12 +15,19 @@
 
 """Chemtrail detection handlers."""
 
+import base64
+import os
+from pathlib import Path
 from typing import Any, Dict, Optional
 from datetime import datetime
 
 import crud
 from db import AsyncSessionLocal
 from common.common import logger
+
+# Detection images are served from the visualizations directory
+BACKEND_DIR = Path(__file__).parent.parent.parent
+VISUALIZATIONS_DIR = BACKEND_DIR / ".." / "data" / "chemtrail_samples" / "visualizations"
 
 
 async def get_chemtrail_detections(
@@ -183,6 +190,58 @@ async def search_chemtrail_archive(
         return {"success": False, "data": [], "error": str(e)}
 
 
+async def get_detection_image(
+    sio: Any,
+    data: Optional[Dict],
+    logger: Any,
+    sid: str
+) -> Dict[str, Any]:
+    """Get detection image as base64 for display in UI.
+
+    Supports both pipeline detection images (by video_name + chunk_index)
+    and stored detection images (by detection id's image_path).
+    """
+    video_name = data.get("video_name") if data else None
+    chunk_index = data.get("chunk_index") if data else None
+
+    if video_name and chunk_index is not None:
+        # Serve from pipeline visualizations directory
+        img_path = VISUALIZATIONS_DIR / video_name / f"chunk_{int(chunk_index):03d}_detected.jpg"
+        if not img_path.exists():
+            img_path = VISUALIZATIONS_DIR / video_name / f"chunk_{int(chunk_index):03d}_no_detection.jpg"
+
+        if img_path.exists():
+            try:
+                with open(img_path, "rb") as f:
+                    img_data = base64.b64encode(f.read()).decode("utf-8")
+                return {"success": True, "data": img_data, "mime_type": "image/jpeg"}
+            except Exception as e:
+                logger.error(f"Error reading detection image {img_path}: {e}")
+                return {"success": False, "data": [], "error": str(e)}
+
+        return {"success": False, "data": [], "error": f"Image not found: {img_path}"}
+
+    # Fallback: try by detection id image_path
+    detection_id = data.get("id") if data else None
+    if detection_id:
+        async with AsyncSessionLocal() as dbsession:
+            detection = await crud.chemtrail_detections.fetch_detection(dbsession, detection_id)
+            if detection["success"] and detection.get("data"):
+                det = detection["data"][0] if isinstance(detection["data"], list) else detection["data"]
+                image_path = det.get("image_path")
+                if image_path:
+                    try:
+                        p = Path(image_path)
+                        if p.exists():
+                            with open(p, "rb") as f:
+                                img_data = base64.b64encode(f.read()).decode("utf-8")
+                            return {"success": True, "data": img_data, "mime_type": "image/jpeg"}
+                    except Exception as e:
+                        logger.error(f"Error reading image at {image_path}: {e}")
+
+    return {"success": False, "data": [], "error": "No image available"}
+
+
 def register_handlers(registry):
     """Register detection handlers with the command registry."""
     registry.register_batch(
@@ -193,5 +252,6 @@ def register_handlers(registry):
             "edit-chemtrail-detection": (edit_chemtrail_detection, "data_submission"),
             "delete-chemtrail-detection": (delete_chemtrail_detection, "data_submission"),
             "search-chemtrail-archive": (search_chemtrail_archive, "data_request"),
+            "get-detection-image": (get_detection_image, "data_request"),
         }
     )

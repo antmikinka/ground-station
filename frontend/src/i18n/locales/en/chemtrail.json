@@ -38,6 +38,8 @@
   },
   "detail": {
     "title": "Detection Details",
+    "section_image": "Detection Image",
+    "no_image": "No image available for this detection",
     "section_detection": "Detection Metadata",
     "section_position": "Estimated Position",
     "section_flight": "Flight Correlation",
