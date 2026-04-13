@@ -21,9 +21,22 @@ import socket
 import threading
 from typing import Any, Dict, List, Union
 
-import SoapySDR
-from zeroconf import ServiceStateChange
-from zeroconf.asyncio import AsyncServiceBrowser, AsyncZeroconf
+try:
+    import SoapySDR
+    SOAPYSDR_AVAILABLE = True
+except ImportError:
+    SoapySDR = None  # type: ignore
+    SOAPYSDR_AVAILABLE = False
+
+try:
+    from zeroconf import ServiceStateChange
+    from zeroconf.asyncio import AsyncServiceBrowser, AsyncZeroconf
+    ZEROCONF_AVAILABLE = True
+except ImportError:
+    ServiceStateChange = None  # type: ignore
+    AsyncServiceBrowser = None  # type: ignore
+    AsyncZeroconf = None  # type: ignore
+    ZEROCONF_AVAILABLE = False
 
 # Configure logger
 logger = logging.getLogger("soapysdr-browser")

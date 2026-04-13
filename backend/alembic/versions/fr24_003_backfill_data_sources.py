@@ -24,8 +24,17 @@ def upgrade() -> None:
     This migration ensures that existing flight_cache records have a proper
     data_sources value, indicating they originated from OpenSky data.
     """
-    # Get connection and execute raw SQL for efficiency
+    # Get connection and check table exists first (parallel branch issue)
     conn = op.get_bind()
+
+    # Check if flight_cache table exists (may not if parallel branch hasn't merged)
+    table_check = conn.execute(sa.text(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='flight_cache'"
+    )).scalar()
+
+    if not table_check:
+        print("flight_cache table not found, skipping data_sources backfill")
+        return
 
     # Update all rows where data_sources is NULL to have ["opensky"]
     result = conn.execute(
@@ -42,12 +51,16 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    """Revert data_sources back to NULL for rows that only have ['opensky'].
-
-    This downgrade reverses the backfill by setting data_sources back to NULL
-    for rows that have exactly ['opensky'] as their data source.
-    """
+    """Revert data_sources back to NULL for rows that only have ['opensky']."""
     conn = op.get_bind()
+
+    # Check if flight_cache table exists
+    table_check = conn.execute(sa.text(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='flight_cache'"
+    )).scalar()
+
+    if not table_check:
+        return
 
     # Set data_sources back to NULL for rows with only opensky
     result = conn.execute(

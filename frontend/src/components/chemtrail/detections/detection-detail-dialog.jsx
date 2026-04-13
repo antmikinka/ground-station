@@ -44,11 +44,17 @@ import RadarIcon from '@mui/icons-material/Radar';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import StraightenIcon from '@mui/icons-material/Straighten';
 import ImageNotSupportedIcon from '@mui/icons-material/ImageNotSupported';
+import TimelineIcon from '@mui/icons-material/Timeline';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 export default function DetectionDetailDialog({ open, onClose, detection, socket }) {
     const { t } = useTranslation('chemtrail');
     const [imageData, setImageData] = useState(null);
     const [imageLoading, setImageLoading] = useState(false);
+    const [flightTrack, setFlightTrack] = useState(null);
+    const [flightTrackLoading, setFlightTrackLoading] = useState(false);
 
     // Fetch detection image when dialog opens
     useEffect(() => {
@@ -78,6 +84,21 @@ export default function DetectionDetailDialog({ open, onClose, detection, socket
             }
         });
     }, [open, detection, socket]);
+
+    // Fetch flight track when detection has icao24
+    useEffect(() => {
+        if (!open || !detection?.icao24 || !socket) return;
+
+        setFlightTrack(null);
+        setFlightTrackLoading(true);
+
+        socket.emit('data_request', 'get-flight-track', { icao24: detection.icao24 }, (response) => {
+            setFlightTrackLoading(false);
+            if (response?.success && response.data) {
+                setFlightTrack(response.data);
+            }
+        });
+    }, [open, detection?.icao24, socket]);
 
     if (!detection) return null;
 
@@ -241,49 +262,134 @@ export default function DetectionDetailDialog({ open, onClose, detection, socket
 
                 {/* Flight Correlation */}
                 <Box sx={{ mb: 3 }}>
-                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                        <FlightIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5 }} />
-                        {t('detail.section_flight')}
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                        <Typography variant="subtitle2" color="text.secondary">
+                            <FlightIcon sx={{ fontSize: 16, verticalAlign: 'middle', mr: 0.5 }} />
+                            {t('detail.section_flight')}
+                        </Typography>
+                        {detection.icao24 && (
+                            <Tooltip title={t('detail.refresh_flight_track')}>
+                                <IconButton
+                                    size="small"
+                                    disabled={flightTrackLoading}
+                                    onClick={() => {
+                                        setFlightTrack(null);
+                                        setFlightTrackLoading(true);
+                                        socket.emit('data_request', 'get-flight-track', { icao24: detection.icao24 }, (response) => {
+                                            setFlightTrackLoading(false);
+                                            if (response?.success && response.data) {
+                                                setFlightTrack(response.data);
+                                            }
+                                        });
+                                    }}
+                                >
+                                    <RefreshIcon fontSize="small" />
+                                </IconButton>
+                            </Tooltip>
+                        )}
+                    </Box>
                     {(detection.icao24 || detection.callsign) ? (
-                        <Table size="small">
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell>{t('detail.icao24')}</TableCell>
-                                    <TableCell>
-                                        <Typography variant="body2" fontFamily="monospace">
-                                            {detection.icao24 || '-'}
-                                        </Typography>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>{t('detail.callsign')}</TableCell>
-                                    <TableCell>
-                                        <Typography variant="body2" fontFamily="monospace">
-                                            {detection.callsign || '-'}
-                                        </Typography>
-                                    </TableCell>
-                                </TableRow>
-                                {detection.origin && (
+                        <>
+                            <Table size="small">
+                                <TableBody>
                                     <TableRow>
-                                        <TableCell>{t('detail.origin')}</TableCell>
-                                        <TableCell>{detection.origin}</TableCell>
+                                        <TableCell>{t('detail.icao24')}</TableCell>
+                                        <TableCell>
+                                            <Typography variant="body2" fontFamily="monospace">
+                                                {detection.icao24 || '-'}
+                                            </Typography>
+                                        </TableCell>
                                     </TableRow>
-                                )}
-                                {detection.destination && (
                                     <TableRow>
-                                        <TableCell>{t('detail.destination')}</TableCell>
-                                        <TableCell>{detection.destination}</TableCell>
+                                        <TableCell>{t('detail.callsign')}</TableCell>
+                                        <TableCell>
+                                            <Typography variant="body2" fontFamily="monospace">
+                                                {detection.callsign || '-'}
+                                            </Typography>
+                                        </TableCell>
                                     </TableRow>
-                                )}
-                                {detection.aircraft_type && (
-                                    <TableRow>
-                                        <TableCell>{t('detail.aircraft_type')}</TableCell>
-                                        <TableCell>{detection.aircraft_type}</TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
+                                    {detection.origin && (
+                                        <TableRow>
+                                            <TableCell>{t('detail.origin')}</TableCell>
+                                            <TableCell>{detection.origin}</TableCell>
+                                        </TableRow>
+                                    )}
+                                    {detection.destination && (
+                                        <TableRow>
+                                            <TableCell>{t('detail.destination')}</TableCell>
+                                            <TableCell>{detection.destination}</TableCell>
+                                        </TableRow>
+                                    )}
+                                    {detection.aircraft_type && (
+                                        <TableRow>
+                                            <TableCell>{t('detail.aircraft_type')}</TableCell>
+                                            <TableCell>{detection.aircraft_type}</TableCell>
+                                        </TableRow>
+                                    )}
+                                </TableBody>
+                            </Table>
+
+                            {/* Flight Track */}
+                            {flightTrackLoading && (
+                                <Box sx={{ mt: 2 }}>
+                                    <Skeleton variant="rectangular" height={120} sx={{ borderRadius: 1 }} />
+                                </Box>
+                            )}
+                            {flightTrack && (
+                                <Box sx={{ mt: 2 }}>
+                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
+                                        <TimelineIcon sx={{ fontSize: 14 }} />
+                                        {t('detail.flight_track_positions')}
+                                        {flightTrack.tracks && (
+                                            <Chip
+                                                label={`${Array.isArray(flightTrack.tracks) ? flightTrack.tracks.length : 0} pts`}
+                                                size="small"
+                                                sx={{ height: 18, fontSize: '0.65rem', ml: 1 }}
+                                            />
+                                        )}
+                                    </Typography>
+                                    <Box
+                                        sx={{
+                                            maxHeight: 180,
+                                            overflow: 'auto',
+                                            bgcolor: 'action.hover',
+                                            borderRadius: 1,
+                                            p: 1,
+                                        }}
+                                    >
+                                        {Array.isArray(flightTrack.tracks) && flightTrack.tracks.length > 0 ? (
+                                            flightTrack.tracks.slice(-10).map((position, index) => (
+                                                <Box
+                                                    key={index}
+                                                    sx={{
+                                                        display: 'flex',
+                                                        justifyContent: 'space-between',
+                                                        alignItems: 'center',
+                                                        py: 0.5,
+                                                        borderBottom: index < Math.min(flightTrack.tracks.length, 10) - 1 ? '1px solid' : 'none',
+                                                        borderColor: 'divider',
+                                                    }}
+                                                >
+                                                    <Typography variant="caption" fontFamily="monospace">
+                                                        {position.timestamp ? new Date(position.timestamp).toLocaleTimeString() : '-'}
+                                                    </Typography>
+                                                    <Typography variant="caption">
+                                                        {position.lat?.toFixed(4)}, {position.lon?.toFixed(4)}
+                                                    </Typography>
+                                                    <Typography variant="caption">
+                                                        {position.altitude != null ? `${Math.round(position.altitude)}m / ${Math.round(position.altitude * 3.28084)}ft` : '-'}
+                                                    </Typography>
+                                                </Box>
+                                            ))
+                                        ) : (
+                                            <Typography variant="caption" color="text.disabled" fontStyle="italic">
+                                                {t('detail.no_flight_track')}
+                                            </Typography>
+                                        )}
+                                    </Box>
+                                </Box>
+                            )}
+                        </>
                     ) : (
                         <Typography variant="body2" color="text.disabled" fontStyle="italic">
                             {t('detail.no_flight_correlation')}

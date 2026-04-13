@@ -63,7 +63,10 @@
     "confidence_medium": "Medium",
     "confidence_low": "Low",
     "fr24_enrichment": "FR24 Enrichment Data",
-    "close": "Close"
+    "close": "Close",
+    "refresh_flight_track": "Refresh flight track",
+    "flight_track_positions": "Flight Track Positions",
+    "no_flight_track": "No track positions available"
   },
   "flights": {
     "title": "Live Flight Tracking",

@@ -22,7 +22,12 @@ import subprocess
 import sys
 from typing import Any, Dict, List, Optional
 
-import gnuradio
+try:
+    import gnuradio
+    GNURADIO_AVAILABLE = True
+except ImportError:
+    gnuradio = None  # type: ignore
+    GNURADIO_AVAILABLE = False
 
 from common.logger import logger
 
@@ -282,22 +287,23 @@ def get_library_versions(use_cache: bool = True) -> Dict[str, Any]:
         }
 
     # GNU Radio
-    gnuradio_version = get_system_library_version(["gnuradio-config-info", "--version"])
-    if gnuradio_version:
-        system_libraries["gnuradio"] = {
-            "name": "GNU Radio",
-            "version": gnuradio_version.strip(),
-            "category": "sdr",
-            "description": "Software-defined radio framework",
-        }
-    else:
-        # Fallback to Python import
-        system_libraries["gnuradio"] = {
-            "name": "GNU Radio",
-            "version": gnuradio.__version__ if hasattr(gnuradio, "__version__") else "installed",
-            "category": "sdr",
-            "description": "Software-defined radio framework",
-        }
+    if GNURADIO_AVAILABLE:
+        gnuradio_version = get_system_library_version(["gnuradio-config-info", "--version"])
+        if gnuradio_version:
+            system_libraries["gnuradio"] = {
+                "name": "GNU Radio",
+                "version": gnuradio_version.strip(),
+                "category": "sdr",
+                "description": "Software-defined radio framework",
+            }
+        else:
+            # Fallback to Python import
+            system_libraries["gnuradio"] = {
+                "name": "GNU Radio",
+                "version": gnuradio.__version__ if hasattr(gnuradio, "__version__") else "installed",
+                "category": "sdr",
+                "description": "Software-defined radio framework",
+            }
 
     # VOLK (Vector-Optimized Library of Kernels)
     volk_version = get_system_library_version(["volk_profile", "--version"])

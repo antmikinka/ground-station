@@ -37,7 +37,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useSocket } from '../../common/socket.jsx';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchFR24Health, fetchFR24Metrics, fetchFLMStatus } from './flights-slice.js';
+import { fetchFR24Health, fetchFR24Metrics, fetchFLMStatus } from '../flights/flights-slice.js';
 import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import DataUsageIcon from '@mui/icons-material/DataUsage';
 import SpeedIcon from '@mui/icons-material/Speed';
@@ -47,7 +47,6 @@ import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
 import HelpIcon from '@mui/icons-material/Help';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import ChipIcon from '@mui/icons-material/Chip';
 import MemoryIcon from '@mui/icons-material/Memory';
 import IconButton from '@mui/material/IconButton';
 
@@ -423,7 +422,7 @@ export default function PipelineStatus() {
                                             textAlign: 'center',
                                         }}
                                     >
-                                        <ChipIcon sx={{ mb: 1, color: 'info.main' }} />
+                                        <MemoryIcon sx={{ mb: 1, color: 'info.main' }} />
                                         <Typography variant="subtitle2" sx={{ mb: 1 }}>
                                             Embedding Model
                                         </Typography>

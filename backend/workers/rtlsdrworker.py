@@ -33,7 +33,12 @@ warnings.filterwarnings(
     category=UserWarning,
     message=r"pkg_resources is deprecated as an API",
 )
-import rtlsdr  # noqa: E402 - import after warning filter by design
+try:
+    import rtlsdr  # noqa: E402 - import after warning filter by design
+    RTLSDR_AVAILABLE = True
+except ImportError:
+    rtlsdr = None  # type: ignore
+    RTLSDR_AVAILABLE = False
 
 from workers.rtlsdrtcpclient import RtlSdrTcpClient  # noqa: E402 - follows filtered import
 

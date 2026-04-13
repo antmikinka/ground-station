@@ -5,6 +5,11 @@ import signal
 import sys
 import threading
 
+# Fix Windows console encoding for Unicode banner output
+if sys.platform == "win32":
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 import uvicorn  # noqa: E402

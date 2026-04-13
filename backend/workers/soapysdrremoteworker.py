@@ -16,12 +16,25 @@
 
 import logging
 import time
-from typing import Any, Dict, List
+from typing import TYPE_CHECKING, Any, Dict, List
 
 import numpy as np
 import psutil
-import SoapySDR
-from SoapySDR import SOAPY_SDR_CF32, SOAPY_SDR_RX
+
+try:
+    import SoapySDR
+    from SoapySDR import SOAPY_SDR_CF32, SOAPY_SDR_RX
+    SOAPYSDR_AVAILABLE = True
+except ImportError:
+    SoapySDR = None  # type: ignore
+    SOAPY_SDR_CF32 = None  # type: ignore
+    SOAPY_SDR_RX = None  # type: ignore
+    SOAPYSDR_AVAILABLE = False
+
+if TYPE_CHECKING:
+    _Device = SoapySDR.Device
+else:
+    _Device = Any
 
 # Configure logging for the worker process
 logger = logging.getLogger("soapysdr-remote")
@@ -33,7 +46,7 @@ def _normalize_setting_value(value: Any) -> str:
     return str(value)
 
 
-def _get_bias_setting_keys(sdr: SoapySDR.Device) -> List[str]:
+def _get_bias_setting_keys(sdr: _Device) -> List[str]:
     keys: List[str] = []
     if not hasattr(sdr, "getSettingInfo"):
         return keys
@@ -48,7 +61,7 @@ def _get_bias_setting_keys(sdr: SoapySDR.Device) -> List[str]:
 
 
 def _apply_soapy_settings(
-    sdr: SoapySDR.Device,
+    sdr: _Device,
     channel: int,
     sdr_settings: Dict[str, Any],
     bias_t: Any,

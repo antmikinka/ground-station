@@ -43,8 +43,8 @@ import RadarIcon from '@mui/icons-material/Radar';
 import { useTranslation } from 'react-i18next';
 import { useSocket } from '../../common/socket.jsx';
 import { useDispatch, useSelector } from 'react-redux';
-import { searchArchive, clearSearchResults } from './detections-slice.js';
-import DetectionDetailDialog from './detection-detail-dialog.jsx';
+import { searchArchive, clearSearchResults } from '../detections/detections-slice.js';
+import DetectionDetailDialog from '../detections/detection-detail-dialog.jsx';
 
 export default function ArchiveSearch() {
     const { socket } = useSocket();

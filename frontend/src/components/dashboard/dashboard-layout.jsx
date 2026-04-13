@@ -82,6 +82,9 @@ import PerformanceMetricsDialog from "../performance/performance-metrics-dialog.
 import BackgroundTasksPopover from "../tasks/tasks-popover.jsx";
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import Collapse from '@mui/material/Collapse';
 import {getNavigation} from "../../config/navigation.jsx";
 import { getFlattenedTasks, getSessionSdrs } from "../scheduler/session-utils.js";
 import { useUserTimeSettings } from '../../hooks/useUserTimeSettings.jsx';
@@ -849,6 +852,7 @@ export default function Layout() {
     const [open, setOpen] = React.useState(false);
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [navigation, setNavigation] = React.useState(getNavigation());
+    const [expandedSections, setExpandedSections] = React.useState({});
     const { timezone, locale } = useUserTimeSettings();
 
     const {
@@ -965,6 +969,21 @@ export default function Layout() {
         }
     };
 
+    const handleChildNavigation = (pathname) => {
+        navigate(pathname);
+        // Close mobile drawer after navigation
+        if (window.innerWidth < 600) {
+            setMobileOpen(false);
+        }
+    };
+
+    const toggleSection = (title) => {
+        setExpandedSections(prev => ({
+            ...prev,
+            [title]: !prev[title],
+        }));
+    };
+
     const isActiveRoute = (segment) => {
         const currentPath = location.pathname.slice(1); // Remove leading slash
         if (segment === '' && currentPath === '') return true;
@@ -1077,6 +1096,104 @@ export default function Layout() {
                 <List>
                     {navigation.map((item, index) => {
                         if (item.kind === 'header') {
+                            // Header with children - render as expandable section
+                            if (item.children && item.children.length > 0) {
+                                const isSectionExpanded = expandedSections[item.title] || false;
+                                return (
+                                    <React.Fragment key={index}>
+                                        <ListItem disablePadding>
+                                            <ListItemButton
+                                                onClick={() => toggleSection(item.title)}
+                                                sx={{
+                                                    minHeight: 40,
+                                                    justifyContent: isExpanded ? 'space-between' : 'center',
+                                                    px: isExpanded ? 2 : 0,
+                                                    py: 0.75,
+                                                }}
+                                            >
+                                                {isExpanded && (
+                                                    <>
+                                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                                            <ListItemIcon
+                                                                sx={{
+                                                                    minWidth: 0,
+                                                                    mr: 2,
+                                                                    display: 'flex',
+                                                                    justifyContent: 'center',
+                                                                    alignItems: 'center',
+                                                                }}
+                                                            >
+                                                                {item.icon}
+                                                            </ListItemIcon>
+                                                            <Typography
+                                                                variant="caption"
+                                                                sx={{
+                                                                    fontWeight: 'bold',
+                                                                    color: 'text.secondary',
+                                                                }}
+                                                            >
+                                                                {item.title}
+                                                            </Typography>
+                                                        </Box>
+                                                        {isSectionExpanded ? <ExpandLess /> : <ExpandMore />}
+                                                    </>
+                                                )}
+                                            </ListItemButton>
+                                        </ListItem>
+                                        <Collapse in={isSectionExpanded} timeout="auto" unmountOnExit>
+                                            {item.children.map((child, childIndex) => {
+                                                if (child.kind === 'nav-link') {
+                                                    const isChildActive = location.pathname.startsWith(child.pathname);
+                                                    return (
+                                                        <ListItem key={childIndex} disablePadding>
+                                                            <ListItemButton
+                                                                onClick={() => handleChildNavigation(child.pathname)}
+                                                                selected={isChildActive}
+                                                                sx={{
+                                                                    minHeight: 36,
+                                                                    pl: 4,
+                                                                    py: 0.5,
+                                                                    '& .MuiTypography-root': {
+                                                                        fontSize: '0.8125rem',
+                                                                    },
+                                                                    '&.Mui-selected': {
+                                                                        backgroundColor: 'action.selected',
+                                                                        '&:hover': {
+                                                                            backgroundColor: 'action.hover',
+                                                                        },
+                                                                    },
+                                                                }}
+                                                            >
+                                                                <ListItemIcon
+                                                                    sx={{
+                                                                        minWidth: 0,
+                                                                        mr: 2,
+                                                                        display: 'flex',
+                                                                        justifyContent: 'center',
+                                                                        alignItems: 'center',
+                                                                    }}
+                                                                >
+                                                                    {child.icon}
+                                                                </ListItemIcon>
+                                                                <ListItemText
+                                                                    primary={child.label}
+                                                                    sx={{
+                                                                        '& .MuiTypography-root': {
+                                                                            fontSize: '0.8125rem',
+                                                                        },
+                                                                    }}
+                                                                />
+                                                            </ListItemButton>
+                                                        </ListItem>
+                                                    );
+                                                }
+                                                return null;
+                                            })}
+                                        </Collapse>
+                                    </React.Fragment>
+                                );
+                            }
+                            // Header without children - simple title
                             return isExpanded ? (
                                 <ListItem key={index} sx={{ pt: 2, pb: 1 }}>
                                     <Typography

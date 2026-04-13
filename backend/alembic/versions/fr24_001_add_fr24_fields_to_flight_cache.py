@@ -19,6 +19,16 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
+    # Check if flight_cache table exists (parallel branch issue)
+    conn = op.get_bind()
+    table_check = conn.execute(sa.text(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='flight_cache'"
+    )).scalar()
+
+    if not table_check:
+        print("flight_cache table not found, skipping FR24 fields migration")
+        return
+
     # Add FR24-specific columns to flight_cache table
     op.add_column("flight_cache", sa.Column("fr24_id", sa.String(), nullable=True))
     op.add_column("flight_cache", sa.Column("squawk", sa.String(), nullable=True))
@@ -39,6 +49,14 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    conn = op.get_bind()
+    table_check = conn.execute(sa.text(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='flight_cache'"
+    )).scalar()
+
+    if not table_check:
+        return
+
     op.drop_index("ix_flight_cache_fr24_id", table_name="flight_cache")
     op.drop_column("flight_cache", "data_sources")
     op.drop_column("flight_cache", "fr24_raw_message")
