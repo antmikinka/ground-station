@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chemtrail Detection Results</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0a0a0f; color: #e0e0e0; padding: 20px; }
+  h1 { text-align: center; margin: 20px 0; font-size: 1.8em; color: #00e676; }
+  .summary { text-align: center; margin: 10px 0 30px; color: #aaa; font-size: 0.95em; }
+  .video-section { margin: 30px 0; }
+  .video-section h2 { color: #4fc3f7; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid #333; font-size: 1.2em; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(480px, 1fr)); gap: 15px; padding: 10px 0; }
+  .card { background: #151520; border-radius: 8px; overflow: hidden; border: 1px solid #222; }
+  .card img { width: 100%; height: auto; display: block; cursor: pointer; }
+  .card-info { padding: 10px 12px; font-size: 0.85em; display: flex; gap: 15px; flex-wrap: wrap; }
+  .card-info span { color: #888; }
+  .card-info .val { color: #00e676; font-weight: bold; }
+  .card-info .video-tag { background: #1a237e; color: #90caf9; padding: 2px 8px; border-radius: 10px; font-size: 0.85em; }
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 1000; cursor: pointer; justify-content: center; align-items: center; }
+  .modal-overlay.active { display: flex; }
+  .modal-overlay img { max-width: 95vw; max-height: 95vh; object-fit: contain; border-radius: 4px; }
+  .legend { text-align: center; margin: 10px 0; color: #666; font-size: 0.85em; }
+  .legend span { margin: 0 15px; }
+  .legend .green { color: #00e676; }
+  .legend .red { color: #ff5252; }
+</style>
+</head>
+<body>
+<h1>Chemtrail Detection Pipeline Results</h1>
+<div class="summary">7 videos processed | 48 detections | 768-dim NPU embeddings via Lemonade Server</div>
+<div class="legend">
+  <span class="green">GREEN LINE = Detected contrail</span>
+  <span class="red">RED DOT = Line endpoints</span>
+</div>
+<div id="content"></div>
+<div class="modal-overlay" id="modal" onclick="this.classList.remove('active')">
+  <img id="modal-img" src="">
+</div>
+<script>
+const detections = {{DETECTIONS_JSON}};
+const videoGroups = {};
+detections.forEach(d => {
+  if (!videoGroups[d.video]) videoGroups[d.video] = [];
+  videoGroups[d.video].push(d);
+});
+const content = document.getElementById('content');
+Object.entries(videoGroups).forEach(([video, items]) => {
+  const section = document.createElement('div');
+  section.className = 'video-section';
+  const scoreAvg = (items.reduce((a, b) => a + b.confidence, 0) / items.length).toFixed(3);
+  section.innerHTML = `<h2>${video} <span style="color:#888;font-size:0.75em">(${items.length} detections, avg score: ${scoreAvg})</span></h2>`;
+  const grid = document.createElement('div');
+  grid.className = 'grid';
+  items.forEach(d => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <img src="${d.image}" onclick="document.getElementById('modal-img').src='${d.image}';document.getElementById('modal').classList.add('active')" alt="${d.chunk}">
+      <div class="card-info">
+        <span class="video-tag">${video}</span>
+        <span>Chunk: <span class="val">${d.chunk}</span></span>
+        <span>Score: <span class="val">${d.confidence.toFixed(3)}</span></span>
+        <span>Angle: <span class="val">${d.angle.toFixed(1)}deg</span></span>
+        <span>Lines: <span class="val">${d.lines}</span></span>
+        <span>Length: <span class="val">${d.length}px</span></span>
+      </div>`;
+    grid.appendChild(card);
+  });
+  section.appendChild(grid);
+  content.appendChild(section);
+});
+</script>
+</body>
+</html>

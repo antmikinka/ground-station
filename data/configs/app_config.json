@@ -1,0 +1,19 @@
+{
+  "_comment": "Ground Station app defaults. Remove or change values to override.",
+  "host": "0.0.0.0",
+  "port": 5000,
+  "db": "data/db/gs.db",
+  "temp_db": false,
+  "log_level": "INFO",
+  "log_config": "data/configs/log_config.yaml",
+  "secret_key": "YOUR_RANDOM_SECRET_KEY",
+  "track_interval_ms": 2000,
+  "enable_soapy_discovery": false,
+  "runonce_soapy_discovery": true,
+  "flm_base_url": "http://localhost:8000",
+  "flm_embedding_model": "nomic-embed-text-v2-moe-GGUF",
+  "flm_vision_model": "qwen3vl-it-4b-FLM",
+  "flm_dimensions": 768,
+  "flm_timeout": 30.0,
+  "embedder_backend": "gemini"
+}
