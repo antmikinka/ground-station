@@ -98,6 +98,8 @@ import {
     taskError,
     setTaskList,
 } from '../components/tasks/tasks-slice.jsx';
+import { addDetection } from '../components/chemtrail/detections/detections-slice.js';
+import RadarIcon from '@mui/icons-material/Radar';
 
 /**
  * Custom hook to handle all socket event listeners
@@ -862,6 +864,27 @@ export const useSocketEventHandlers = (socket) => {
             );
         });
 
+        // Chemtrail detection real-time events
+        socket.on('chemtrail:detection-created', (data) => {
+            const detection = data.detection;
+            // Add to Redux store
+            store.dispatch(addDetection(detection));
+            // Show toast notification
+            const type = detection.type || 'contrail';
+            const confidence = detection.confidence ? Math.round(detection.confidence * 100) : '?';
+            const videoName = detection.video_name || detection.camera_name || '';
+            toast.success(
+                <ToastMessage
+                    title={`New ${type} detected`}
+                    body={`${videoName}${videoName ? ' • ' : ''}Confidence: ${confidence}%`}
+                />,
+                {
+                    icon: () => <RadarIcon />,
+                    autoClose: 5000,
+                }
+            );
+        });
+
         // Cleanup function
         return () => {
             clearInterval(timingInterval);
@@ -902,6 +925,7 @@ export const useSocketEventHandlers = (socket) => {
             socket.off("soapysdr:discovery_complete");
             socket.off("soapysdr:refresh_complete");
             socket.off("soapysdr:discovery_error");
+            socket.off("chemtrail:detection-created");
         };
     }, [socket, dispatch, t]);
 };

@@ -73,6 +73,19 @@ async def submit_chemtrail_detection(
     async with AsyncSessionLocal() as dbsession:
         logger.debug(f"Adding chemtrail detection, data: {data}")
         add_reply = await crud.chemtrail_detections.add_detection(dbsession, data)
+
+        # Emit real-time event for new detection
+        if add_reply.get("success") and data:
+            try:
+                detection_record = add_reply.get("data", data)
+                await sio.emit("chemtrail:detection-created", {
+                    "detection": detection_record,
+                    "timestamp": datetime.utcnow().isoformat(),
+                })
+                logger.debug("Emitted chemtrail:detection-created event")
+            except Exception as e:
+                logger.error(f"Error emitting detection event: {e}")
+
         # Return refreshed list after mutation, matching satellites.py pattern
         detections = await crud.chemtrail_detections.fetch_all_detections(dbsession)
         return {

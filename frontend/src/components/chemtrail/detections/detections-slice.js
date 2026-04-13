@@ -198,6 +198,13 @@ const detectionsSlice = createSlice({
         clearSearchResults: (state) => {
             state.searchResults = [];
         },
+        addDetection: (state, action) => {
+            // Prepend new detection to the list
+            const newDetection = action.payload;
+            if (newDetection && !state.detections.find(d => d.id === newDetection.id)) {
+                state.detections.unshift(newDetection);
+            }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -285,6 +292,7 @@ export const {
     setPagination,
     clearSelectedDetection,
     clearSearchResults,
+    addDetection,
 } = detectionsSlice.actions;
 
 export default detectionsSlice.reducer;
