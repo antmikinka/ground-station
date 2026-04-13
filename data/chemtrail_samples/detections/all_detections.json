@@ -1,0 +1,914 @@
+[
+  {
+    "source_video": "contrails_2025_ground_to_air",
+    "chunk_index": 0,
+    "start_time": 0.0,
+    "end_time": 15.0,
+    "description": "Contrail in contrails_2025_ground_to_air chunk 0: 1 line(s), confidence 0.492, angle 0.0deg, length 154px",
+    "num_lines": 1,
+    "confidence": 0.4924,
+    "angle_deg": 0.0,
+    "length_px": 154.0,
+    "start_pos": [
+      16.0,
+      309.0
+    ],
+    "end_pos": [
+      170.0,
+      309.0
+    ]
+  },
+  {
+    "source_video": "contrails_2025_ground_to_air",
+    "chunk_index": 1,
+    "start_time": 10.0,
+    "end_time": 25.0,
+    "description": "Contrail in contrails_2025_ground_to_air chunk 1: 1 line(s), confidence 0.583, angle 4.7deg, length 206px",
+    "num_lines": 1,
+    "confidence": 0.582901245871583,
+    "angle_deg": 4.740510573891178,
+    "length_px": 205.70367036103173,
+    "start_pos": [
+      302.0,
+      151.0
+    ],
+    "end_pos": [
+      507.0,
+      168.0
+    ]
+  },
+  {
+    "source_video": "contrails_2025_ground_to_air",
+    "chunk_index": 4,
+    "start_time": 40.0,
+    "end_time": 55.0,
+    "description": "Contrail in contrails_2025_ground_to_air chunk 4: 15 line(s), confidence 0.655, angle 5.0deg, length 512px",
+    "num_lines": 15,
+    "confidence": 0.6551782127184809,
+    "angle_deg": 5.042451069170913,
+    "length_px": 511.9814449762804,
+    "start_pos": [
+      97.0,
+      286.0
+    ],
+    "end_pos": [
+      607.0,
+      241.0
+    ]
+  },
+  {
+    "source_video": "contrails_2025_ground_to_air",
+    "chunk_index": 5,
+    "start_time": 50.0,
+    "end_time": 65.0,
+    "description": "Contrail in contrails_2025_ground_to_air chunk 5: 3 line(s), confidence 0.618, angle 4.9deg, length 244px",
+    "num_lines": 3,
+    "confidence": 0.6177378010045342,
+    "angle_deg": 4.939215542126199,
+    "length_px": 243.90571949013415,
+    "start_pos": [
+      396.0,
+      159.0
+    ],
+    "end_pos": [
+      639.0,
+      138.0
+    ]
+  },
+  {
+    "source_video": "contrails_2025_ground_to_air",
+    "chunk_index": 7,
+    "start_time": 70.0,
+    "end_time": 85.0,
+    "description": "Contrail in contrails_2025_ground_to_air chunk 7: 7 line(s), confidence 0.323, angle 20.9deg, length 182px",
+    "num_lines": 7,
+    "confidence": 0.32320607727324185,
+    "angle_deg": 20.924501744921166,
+    "length_px": 182.00274723201295,
+    "start_pos": [
+      135.0,
+      299.0
+    ],
+    "end_pos": [
+      305.0,
+      234.0
+    ]
+  },
+  {
+    "source_video": "contrails_2025_ground_to_air",
+    "chunk_index": 8,
+    "start_time": 80.0,
+    "end_time": 95.0,
+    "description": "Contrail in contrails_2025_ground_to_air chunk 8: 6 line(s), confidence 0.476, angle 0.8deg, length 139px",
+    "num_lines": 6,
+    "confidence": 0.4760811409059013,
+    "angle_deg": 0.824342820845153,
+    "length_px": 139.01438774457844,
+    "start_pos": [
+      86.0,
+      308.0
+    ],
+    "end_pos": [
+      225.0,
+      306.0
+    ]
+  },
+  {
+    "source_video": "contrails_2025_ground_to_air",
+    "chunk_index": 10,
+    "start_time": 100.0,
+    "end_time": 115.0,
+    "description": "Contrail in contrails_2025_ground_to_air chunk 10: 1 line(s), confidence 0.763, angle 0.0deg, length 116px",
+    "num_lines": 1,
+    "confidence": 0.7633810945273632,
+    "angle_deg": 0.0,
+    "length_px": 116.0,
+    "start_pos": [
+      90.0,
+      5.0
+    ],
+    "end_pos": [
+      206.0,
+      5.0
+    ]
+  },
+  {
+    "source_video": "contrails_2025_ground_to_air",
+    "chunk_index": 11,
+    "start_time": 110.0,
+    "end_time": 120.053267,
+    "description": "Contrail in contrails_2025_ground_to_air chunk 11: 5 line(s), confidence 0.551, angle 0.9deg, length 182px",
+    "num_lines": 5,
+    "confidence": 0.551442498894937,
+    "angle_deg": 0.9443504035796334,
+    "length_px": 182.02472359545007,
+    "start_pos": [
+      2.0,
+      199.0
+    ],
+    "end_pos": [
+      184.0,
+      202.0
+    ]
+  },
+  {
+    "source_video": "mile_high_skycam_apr2026",
+    "chunk_index": 0,
+    "start_time": 0.0,
+    "end_time": 15.0,
+    "description": "Contrail in mile_high_skycam_apr2026 chunk 0: 12 line(s), confidence 0.498, angle 0.0deg, length 163px",
+    "num_lines": 12,
+    "confidence": 0.4978,
+    "angle_deg": 0.0,
+    "length_px": 163.0,
+    "start_pos": [
+      106.0,
+      592.0
+    ],
+    "end_pos": [
+      269.0,
+      592.0
+    ]
+  },
+  {
+    "source_video": "mile_high_skycam_apr2026",
+    "chunk_index": 1,
+    "start_time": 10.0,
+    "end_time": 25.0,
+    "description": "Contrail in mile_high_skycam_apr2026 chunk 1: 10 line(s), confidence 0.530, angle 0.9deg, length 200px",
+    "num_lines": 10,
+    "confidence": 0.5300751945542502,
+    "angle_deg": 0.8593722436446809,
+    "length_px": 200.02249873451737,
+    "start_pos": [
+      43.0,
+      405.0
+    ],
+    "end_pos": [
+      243.0,
+      402.0
+    ]
+  },
+  {
+    "source_video": "mile_high_skycam_apr2026",
+    "chunk_index": 2,
+    "start_time": 20.0,
+    "end_time": 35.0,
+    "description": "Contrail in mile_high_skycam_apr2026 chunk 2: 8 line(s), confidence 0.505, angle 0.0deg, length 175px",
+    "num_lines": 8,
+    "confidence": 0.505,
+    "angle_deg": 0.0,
+    "length_px": 175.0,
+    "start_pos": [
+      184.0,
+      593.0
+    ],
+    "end_pos": [
+      359.0,
+      593.0
+    ]
+  },
+  {
+    "source_video": "mile_high_skycam_apr2026",
+    "chunk_index": 3,
+    "start_time": 30.0,
+    "end_time": 45.0,
+    "description": "Contrail in mile_high_skycam_apr2026 chunk 3: 2 line(s), confidence 0.458, angle 0.5deg, length 105px",
+    "num_lines": 2,
+    "confidence": 0.4581525673588215,
+    "angle_deg": 0.5456575934157205,
+    "length_px": 105.00476179678711,
+    "start_pos": [
+      222.0,
+      543.0
+    ],
+    "end_pos": [
+      327.0,
+      544.0
+    ]
+  },
+  {
+    "source_video": "mile_high_skycam_apr2026",
+    "chunk_index": 4,
+    "start_time": 40.0,
+    "end_time": 55.0,
+    "description": "Contrail in mile_high_skycam_apr2026 chunk 4: 4 line(s), confidence 0.467, angle 0.0deg, length 112px",
+    "num_lines": 4,
+    "confidence": 0.4672,
+    "angle_deg": 0.0,
+    "length_px": 112.0,
+    "start_pos": [
+      150.0,
+      498.0
+    ],
+    "end_pos": [
+      262.0,
+      498.0
+    ]
+  },
+  {
+    "source_video": "mile_high_skycam_apr2026",
+    "chunk_index": 5,
+    "start_time": 50.0,
+    "end_time": 65.0,
+    "description": "Contrail in mile_high_skycam_apr2026 chunk 5: 4 line(s), confidence 0.479, angle 0.0deg, length 132px",
+    "num_lines": 4,
+    "confidence": 0.4792,
+    "angle_deg": 0.0,
+    "length_px": 132.0,
+    "start_pos": [
+      217.0,
+      596.0
+    ],
+    "end_pos": [
+      349.0,
+      596.0
+    ]
+  },
+  {
+    "source_video": "mile_high_skycam_apr2026",
+    "chunk_index": 6,
+    "start_time": 60.0,
+    "end_time": 75.0,
+    "description": "Contrail in mile_high_skycam_apr2026 chunk 6: 3 line(s), confidence 0.494, angle 0.0deg, length 157px",
+    "num_lines": 3,
+    "confidence": 0.49420000000000003,
+    "angle_deg": 0.0,
+    "length_px": 157.0,
+    "start_pos": [
+      202.0,
+      595.0
+    ],
+    "end_pos": [
+      359.0,
+      595.0
+    ]
+  },
+  {
+    "source_video": "mile_high_skycam_apr2026",
+    "chunk_index": 7,
+    "start_time": 70.0,
+    "end_time": 85.0,
+    "description": "Contrail in mile_high_skycam_apr2026 chunk 7: 10 line(s), confidence 0.612, angle 0.0deg, length 354px",
+    "num_lines": 10,
+    "confidence": 0.6124,
+    "angle_deg": 0.0,
+    "length_px": 354.0,
+    "start_pos": [
+      5.0,
+      544.0
+    ],
+    "end_pos": [
+      359.0,
+      544.0
+    ]
+  },
+  {
+    "source_video": "mile_high_skycam_apr2026",
+    "chunk_index": 8,
+    "start_time": 80.0,
+    "end_time": 95.0,
+    "description": "Contrail in mile_high_skycam_apr2026 chunk 8: 13 line(s), confidence 0.508, angle 0.0deg, length 170px",
+    "num_lines": 13,
+    "confidence": 0.5081567164179105,
+    "angle_deg": 0.0,
+    "length_px": 170.0,
+    "start_pos": [
+      0.0,
+      420.0
+    ],
+    "end_pos": [
+      170.0,
+      420.0
+    ]
+  },
+  {
+    "source_video": "mile_high_skycam_apr2026",
+    "chunk_index": 9,
+    "start_time": 90.0,
+    "end_time": 105.0,
+    "description": "Contrail in mile_high_skycam_apr2026 chunk 9: 8 line(s), confidence 0.495, angle 0.0deg, length 140px",
+    "num_lines": 8,
+    "confidence": 0.495054104477612,
+    "angle_deg": 0.0,
+    "length_px": 140.0,
+    "start_pos": [
+      87.0,
+      413.0
+    ],
+    "end_pos": [
+      227.0,
+      413.0
+    ]
+  },
+  {
+    "source_video": "mile_high_skycam_apr2026",
+    "chunk_index": 10,
+    "start_time": 100.0,
+    "end_time": 115.0,
+    "description": "Contrail in mile_high_skycam_apr2026 chunk 10: 11 line(s), confidence 0.511, angle 0.0deg, length 185px",
+    "num_lines": 11,
+    "confidence": 0.511,
+    "angle_deg": 0.0,
+    "length_px": 185.0,
+    "start_pos": [
+      107.0,
+      592.0
+    ],
+    "end_pos": [
+      292.0,
+      592.0
+    ]
+  },
+  {
+    "source_video": "mile_high_skycam_apr2026",
+    "chunk_index": 11,
+    "start_time": 110.0,
+    "end_time": 119.765333,
+    "description": "Contrail in mile_high_skycam_apr2026 chunk 11: 8 line(s), confidence 0.489, angle 0.0deg, length 149px",
+    "num_lines": 8,
+    "confidence": 0.4894,
+    "angle_deg": 0.0,
+    "length_px": 149.0,
+    "start_pos": [
+      210.0,
+      595.0
+    ],
+    "end_pos": [
+      359.0,
+      595.0
+    ]
+  },
+  {
+    "source_video": "perm_russia_timelapse_mar2026",
+    "chunk_index": 0,
+    "start_time": 0.0,
+    "end_time": 15.0,
+    "description": "Contrail in perm_russia_timelapse_mar2026 chunk 0: 14 line(s), confidence 0.495, angle 0.0deg, length 158px",
+    "num_lines": 14,
+    "confidence": 0.4948,
+    "angle_deg": 0.0,
+    "length_px": 158.0,
+    "start_pos": [
+      478.0,
+      347.0
+    ],
+    "end_pos": [
+      636.0,
+      347.0
+    ]
+  },
+  {
+    "source_video": "perm_russia_timelapse_mar2026",
+    "chunk_index": 1,
+    "start_time": 10.0,
+    "end_time": 25.0,
+    "description": "Contrail in perm_russia_timelapse_mar2026 chunk 1: 15 line(s), confidence 0.495, angle 0.0deg, length 159px",
+    "num_lines": 15,
+    "confidence": 0.4954,
+    "angle_deg": 0.0,
+    "length_px": 159.0,
+    "start_pos": [
+      478.0,
+      347.0
+    ],
+    "end_pos": [
+      637.0,
+      347.0
+    ]
+  },
+  {
+    "source_video": "perm_russia_timelapse_mar2026",
+    "chunk_index": 2,
+    "start_time": 20.0,
+    "end_time": 35.0,
+    "description": "Contrail in perm_russia_timelapse_mar2026 chunk 2: 13 line(s), confidence 0.502, angle 0.0deg, length 170px",
+    "num_lines": 13,
+    "confidence": 0.502,
+    "angle_deg": 0.0,
+    "length_px": 170.0,
+    "start_pos": [
+      466.0,
+      355.0
+    ],
+    "end_pos": [
+      636.0,
+      355.0
+    ]
+  },
+  {
+    "source_video": "perm_russia_timelapse_mar2026",
+    "chunk_index": 3,
+    "start_time": 30.0,
+    "end_time": 45.0,
+    "description": "Contrail in perm_russia_timelapse_mar2026 chunk 3: 12 line(s), confidence 0.501, angle 0.0deg, length 168px",
+    "num_lines": 12,
+    "confidence": 0.5008,
+    "angle_deg": 0.0,
+    "length_px": 168.0,
+    "start_pos": [
+      469.0,
+      347.0
+    ],
+    "end_pos": [
+      637.0,
+      347.0
+    ]
+  },
+  {
+    "source_video": "perm_russia_timelapse_mar2026",
+    "chunk_index": 4,
+    "start_time": 40.0,
+    "end_time": 55.0,
+    "description": "Contrail in perm_russia_timelapse_mar2026 chunk 4: 14 line(s), confidence 0.512, angle 0.0deg, length 187px",
+    "num_lines": 14,
+    "confidence": 0.5122,
+    "angle_deg": 0.0,
+    "length_px": 187.0,
+    "start_pos": [
+      1.0,
+      355.0
+    ],
+    "end_pos": [
+      188.0,
+      355.0
+    ]
+  },
+  {
+    "source_video": "perm_russia_timelapse_mar2026",
+    "chunk_index": 5,
+    "start_time": 50.0,
+    "end_time": 65.0,
+    "description": "Contrail in perm_russia_timelapse_mar2026 chunk 5: 13 line(s), confidence 0.501, angle 0.0deg, length 168px",
+    "num_lines": 13,
+    "confidence": 0.5008,
+    "angle_deg": 0.0,
+    "length_px": 168.0,
+    "start_pos": [
+      468.0,
+      347.0
+    ],
+    "end_pos": [
+      636.0,
+      347.0
+    ]
+  },
+  {
+    "source_video": "perm_russia_timelapse_mar2026",
+    "chunk_index": 6,
+    "start_time": 60.0,
+    "end_time": 75.0,
+    "description": "Contrail in perm_russia_timelapse_mar2026 chunk 6: 14 line(s), confidence 0.501, angle 0.0deg, length 168px",
+    "num_lines": 14,
+    "confidence": 0.5008,
+    "angle_deg": 0.0,
+    "length_px": 168.0,
+    "start_pos": [
+      469.0,
+      347.0
+    ],
+    "end_pos": [
+      637.0,
+      347.0
+    ]
+  },
+  {
+    "source_video": "perm_russia_timelapse_mar2026",
+    "chunk_index": 7,
+    "start_time": 70.0,
+    "end_time": 85.0,
+    "description": "Contrail in perm_russia_timelapse_mar2026 chunk 7: 13 line(s), confidence 0.495, angle 0.0deg, length 158px",
+    "num_lines": 13,
+    "confidence": 0.4948,
+    "angle_deg": 0.0,
+    "length_px": 158.0,
+    "start_pos": [
+      480.0,
+      347.0
+    ],
+    "end_pos": [
+      638.0,
+      347.0
+    ]
+  },
+  {
+    "source_video": "perm_russia_timelapse_mar2026",
+    "chunk_index": 8,
+    "start_time": 80.0,
+    "end_time": 95.0,
+    "description": "Contrail in perm_russia_timelapse_mar2026 chunk 8: 14 line(s), confidence 0.510, angle 0.0deg, length 184px",
+    "num_lines": 14,
+    "confidence": 0.5104,
+    "angle_deg": 0.0,
+    "length_px": 184.0,
+    "start_pos": [
+      4.0,
+      352.0
+    ],
+    "end_pos": [
+      188.0,
+      352.0
+    ]
+  },
+  {
+    "source_video": "perm_russia_timelapse_mar2026",
+    "chunk_index": 9,
+    "start_time": 90.0,
+    "end_time": 105.0,
+    "description": "Contrail in perm_russia_timelapse_mar2026 chunk 9: 16 line(s), confidence 0.517, angle 0.0deg, length 195px",
+    "num_lines": 16,
+    "confidence": 0.517,
+    "angle_deg": 0.0,
+    "length_px": 195.0,
+    "start_pos": [
+      443.0,
+      353.0
+    ],
+    "end_pos": [
+      638.0,
+      353.0
+    ]
+  },
+  {
+    "source_video": "perm_russia_timelapse_mar2026",
+    "chunk_index": 10,
+    "start_time": 100.0,
+    "end_time": 115.0,
+    "description": "Contrail in perm_russia_timelapse_mar2026 chunk 10: 15 line(s), confidence 0.494, angle 0.0deg, length 157px",
+    "num_lines": 15,
+    "confidence": 0.49420000000000003,
+    "angle_deg": 0.0,
+    "length_px": 157.0,
+    "start_pos": [
+      480.0,
+      347.0
+    ],
+    "end_pos": [
+      637.0,
+      347.0
+    ]
+  },
+  {
+    "source_video": "perm_russia_timelapse_mar2026",
+    "chunk_index": 11,
+    "start_time": 110.0,
+    "end_time": 120.033333,
+    "description": "Contrail in perm_russia_timelapse_mar2026 chunk 11: 19 line(s), confidence 0.504, angle 0.0deg, length 174px",
+    "num_lines": 19,
+    "confidence": 0.5044,
+    "angle_deg": 0.0,
+    "length_px": 174.0,
+    "start_pos": [
+      464.0,
+      347.0
+    ],
+    "end_pos": [
+      638.0,
+      347.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_21sep2025",
+    "chunk_index": 5,
+    "start_time": 50.0,
+    "end_time": 65.0,
+    "description": "Contrail in sky_trail_21sep2025 chunk 5: 5 line(s), confidence 0.482, angle 0.0deg, length 137px",
+    "num_lines": 5,
+    "confidence": 0.4822,
+    "angle_deg": 0.0,
+    "length_px": 137.0,
+    "start_pos": [
+      110.0,
+      358.0
+    ],
+    "end_pos": [
+      247.0,
+      358.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_21sep2025",
+    "chunk_index": 6,
+    "start_time": 60.0,
+    "end_time": 75.0,
+    "description": "Contrail in sky_trail_21sep2025 chunk 6: 5 line(s), confidence 0.462, angle 0.0deg, length 103px",
+    "num_lines": 5,
+    "confidence": 0.4618,
+    "angle_deg": 0.0,
+    "length_px": 103.0,
+    "start_pos": [
+      45.0,
+      357.0
+    ],
+    "end_pos": [
+      148.0,
+      357.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_21sep2025",
+    "chunk_index": 7,
+    "start_time": 70.0,
+    "end_time": 81.96644,
+    "description": "Contrail in sky_trail_21sep2025 chunk 7: 16 line(s), confidence 0.470, angle 0.0deg, length 116px",
+    "num_lines": 16,
+    "confidence": 0.4696,
+    "angle_deg": 0.0,
+    "length_px": 116.0,
+    "start_pos": [
+      176.0,
+      357.0
+    ],
+    "end_pos": [
+      292.0,
+      357.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_23sep2025",
+    "chunk_index": 0,
+    "start_time": 0.0,
+    "end_time": 15.0,
+    "description": "Contrail in sky_trail_23sep2025 chunk 0: 4 line(s), confidence 0.711, angle 3.9deg, length 116px",
+    "num_lines": 4,
+    "confidence": 0.7110651580660842,
+    "angle_deg": 3.945186229037563,
+    "length_px": 116.27553482998907,
+    "start_pos": [
+      244.0,
+      23.0
+    ],
+    "end_pos": [
+      360.0,
+      15.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_23sep2025",
+    "chunk_index": 1,
+    "start_time": 10.0,
+    "end_time": 25.0,
+    "description": "Contrail in sky_trail_23sep2025 chunk 1: 1 line(s), confidence 0.643, angle 9.0deg, length 108px",
+    "num_lines": 1,
+    "confidence": 0.6430931154413115,
+    "angle_deg": 9.027612950715096,
+    "length_px": 108.34205093129813,
+    "start_pos": [
+      74.0,
+      42.0
+    ],
+    "end_pos": [
+      181.0,
+      25.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_23sep2025",
+    "chunk_index": 2,
+    "start_time": 20.0,
+    "end_time": 35.0,
+    "description": "Contrail in sky_trail_23sep2025 chunk 2: 4 line(s), confidence 0.467, angle 0.0deg, length 112px",
+    "num_lines": 4,
+    "confidence": 0.4672,
+    "angle_deg": 0.0,
+    "length_px": 112.0,
+    "start_pos": [
+      249.0,
+      358.0
+    ],
+    "end_pos": [
+      361.0,
+      358.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_23sep2025",
+    "chunk_index": 3,
+    "start_time": 30.0,
+    "end_time": 45.0,
+    "description": "Contrail in sky_trail_23sep2025 chunk 3: 2 line(s), confidence 0.518, angle 22.0deg, length 131px",
+    "num_lines": 2,
+    "confidence": 0.5183086052474833,
+    "angle_deg": 22.04591346237152,
+    "length_px": 130.5450113945378,
+    "start_pos": [
+      38.0,
+      76.0
+    ],
+    "end_pos": [
+      159.0,
+      27.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_23sep2025",
+    "chunk_index": 4,
+    "start_time": 40.0,
+    "end_time": 55.0,
+    "description": "Contrail in sky_trail_23sep2025 chunk 4: 1 line(s), confidence 0.517, angle 22.0deg, length 128px",
+    "num_lines": 1,
+    "confidence": 0.5170486069348209,
+    "angle_deg": 21.967243406812898,
+    "length_px": 128.3160161476345,
+    "start_pos": [
+      38.0,
+      76.0
+    ],
+    "end_pos": [
+      157.0,
+      28.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_23sep2025",
+    "chunk_index": 5,
+    "start_time": 50.0,
+    "end_time": 65.0,
+    "description": "Contrail in sky_trail_23sep2025 chunk 5: 3 line(s), confidence 0.478, angle 0.0deg, length 130px",
+    "num_lines": 3,
+    "confidence": 0.47800000000000004,
+    "angle_deg": 0.0,
+    "length_px": 130.0,
+    "start_pos": [
+      101.0,
+      358.0
+    ],
+    "end_pos": [
+      231.0,
+      358.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_23sep2025",
+    "chunk_index": 6,
+    "start_time": 60.0,
+    "end_time": 69.04,
+    "description": "Contrail in sky_trail_23sep2025 chunk 6: 2 line(s), confidence 0.749, angle 0.0deg, length 106px",
+    "num_lines": 2,
+    "confidence": 0.7486746268656717,
+    "angle_deg": 0.0,
+    "length_px": 106.0,
+    "start_pos": [
+      249.0,
+      12.0
+    ],
+    "end_pos": [
+      355.0,
+      12.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_timelapse_28sep2025",
+    "chunk_index": 2,
+    "start_time": 20.0,
+    "end_time": 35.0,
+    "description": "Contrail in sky_trail_timelapse_28sep2025 chunk 2: 1 line(s), confidence 0.462, angle 0.0deg, length 103px",
+    "num_lines": 1,
+    "confidence": 0.4618,
+    "angle_deg": 0.0,
+    "length_px": 103.0,
+    "start_pos": [
+      374.0,
+      357.0
+    ],
+    "end_pos": [
+      477.0,
+      357.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_timelapse_28sep2025",
+    "chunk_index": 3,
+    "start_time": 30.0,
+    "end_time": 45.0,
+    "description": "Contrail in sky_trail_timelapse_28sep2025 chunk 3: 1 line(s), confidence 0.462, angle 0.0deg, length 103px",
+    "num_lines": 1,
+    "confidence": 0.4618,
+    "angle_deg": 0.0,
+    "length_px": 103.0,
+    "start_pos": [
+      374.0,
+      357.0
+    ],
+    "end_pos": [
+      477.0,
+      357.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_timelapse_28sep2025",
+    "chunk_index": 4,
+    "start_time": 40.0,
+    "end_time": 55.0,
+    "description": "Contrail in sky_trail_timelapse_28sep2025 chunk 4: 1 line(s), confidence 0.462, angle 0.0deg, length 103px",
+    "num_lines": 1,
+    "confidence": 0.4618,
+    "angle_deg": 0.0,
+    "length_px": 103.0,
+    "start_pos": [
+      374.0,
+      357.0
+    ],
+    "end_pos": [
+      477.0,
+      357.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_timelapse_28sep2025",
+    "chunk_index": 5,
+    "start_time": 50.0,
+    "end_time": 65.0,
+    "description": "Contrail in sky_trail_timelapse_28sep2025 chunk 5: 4 line(s), confidence 0.475, angle 0.0deg, length 125px",
+    "num_lines": 4,
+    "confidence": 0.47500000000000003,
+    "angle_deg": 0.0,
+    "length_px": 125.0,
+    "start_pos": [
+      150.0,
+      357.0
+    ],
+    "end_pos": [
+      275.0,
+      357.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_timelapse_28sep2025",
+    "chunk_index": 6,
+    "start_time": 60.0,
+    "end_time": 75.0,
+    "description": "Contrail in sky_trail_timelapse_28sep2025 chunk 6: 8 line(s), confidence 0.462, angle 0.0deg, length 103px",
+    "num_lines": 8,
+    "confidence": 0.4618,
+    "angle_deg": 0.0,
+    "length_px": 103.0,
+    "start_pos": [
+      374.0,
+      357.0
+    ],
+    "end_pos": [
+      477.0,
+      357.0
+    ]
+  },
+  {
+    "source_video": "sky_trail_timelapse_28sep2025",
+    "chunk_index": 7,
+    "start_time": 70.0,
+    "end_time": 81.04,
+    "description": "Contrail in sky_trail_timelapse_28sep2025 chunk 7: 12 line(s), confidence 0.462, angle 0.0deg, length 103px",
+    "num_lines": 12,
+    "confidence": 0.4618,
+    "angle_deg": 0.0,
+    "length_px": 103.0,
+    "start_pos": [
+      374.0,
+      357.0
+    ],
+    "end_pos": [
+      477.0,
+      357.0
+    ]
+  }
+]

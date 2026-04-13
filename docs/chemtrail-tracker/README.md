@@ -87,7 +87,30 @@ camera_metadata = {
 }
 ```
 
-3. **FR24 Integration Setup** (Optional - for enhanced flight data):
+3. **Lemonade Server FLM** (Optional - for local NPU embedding):
+
+   a. Install Lemonade Server from https://github.com/FastFlowLM/FastFlowLM/releases
+   
+   b. Start Lemonade Server (GUI app or `lemonade-server.exe`)
+   
+   c. Verify the server is running at `http://localhost:8000`:
+   ```bash
+   curl http://localhost:8000/v1/models
+   ```
+   
+   d. Set environment variables:
+   ```bash
+   FLM_BASE_URL=http://localhost:8000
+   FLM_EMBEDDING_MODEL=nomic-embed-text-v2-moe-GGUF
+   FLM_VISION_MODEL=qwen3vl-it-4b-FLM
+   FLM_DIMENSIONS=768
+   EMBEDDER_BACKEND=flm
+   ```
+
+   Lemonade Server routes inference to FLM on the AMD Ryzen AI NPU backend,
+   providing an OpenAI-compatible API for vision-language and embedding tasks.
+
+4. **FR24 Integration Setup** (Optional - for enhanced flight data):
 
    a. Obtain an FR24 API token from https://www.flightradar24.com/developers/api
    
@@ -117,7 +140,7 @@ camera_metadata = {
    print(result)  # Should contain fr24_id, painted_as, etc.
    ```
 
-4. **Phase 2**: Register webcam sources programmatically:
+5. **Phase 2**: Register webcam sources programmatically:
 ```python
 from chemtrail.sources import WebcamManager, StreamType
 
@@ -137,7 +160,7 @@ source = manager.add_manual_source(
 )
 ```
 
-5. **Phase 2**: Import historical video archives:
+6. **Phase 2**: Import historical video archives:
 ```python
 from chemtrail.sources import HistoricalIngestor
 
@@ -387,6 +410,7 @@ C:\Users\antmi\ground-station\
 │   │   │   ├── embedder.py         # Embedding factory
 │   │   │   ├── base_embedder.py    # Abstract base class
 │   │   │   ├── gemini_embedder.py  # Gemini API backend
+│   │   │   ├── flm_embedder.py     # Lemonade Server FLM NPU embedder
 │   │   │   ├── telemetry_overlay.py# Flight HUD overlay
 │   │   │   └── detection_service.py# Pipeline orchestrator
 │   │   ├── sources/                # Phase 2 Footage Acquisition (NEW)
@@ -408,14 +432,12 @@ C:\Users\antmi\ground-station\
 │   └── chemtrail-tracker/
 │       ├── README.md               # This file
 │       ├── ARCHITECTURE.md         # Technical architecture
-│       ├── PHASE2_ARCHITECTURE.md  # Phase 2 architecture
-│       ├── IMPLEMENTATION_BRIEF_PHASE2.md  # Phase 2 implementation
-│       ├── PHASE2_USER_GUIDE.md    # Phase 2 user guide (NEW)
-│       ├── PIPELINE_QUICKSTART.md  # 5-minute quickstart (NEW)
-│       ├── INTEGRATION_ARCHITECTURE.md  # Phase 1.5 architecture
-│       ├── IMPLEMENTATION_BRIEF.md # Implementation details
 │       ├── INTEGRATION_GUIDE.md    # User integration guide
-│       └── API_REFERENCE.md        # Developer API docs
+│       ├── INTEGRATION_ARCHITECTURE.md  # Phase 1.5 architecture
+│       ├── API_REFERENCE.md        # Developer API docs
+│       ├── PIPELINE_QUICKSTART.md  # 5-minute quickstart
+│       ├── FUTURE-WHERE-TO-RESUME-LEFT-OFF.md  # Living progress doc
+│       └── archive/                # Historical/phase-completed docs
 └── frontend/
     └── src/
         └── features/

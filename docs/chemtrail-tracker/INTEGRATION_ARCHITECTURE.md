@@ -310,8 +310,8 @@ backend/
 
 collection_metadata = {
     "hnsw:space": "cosine",
-    "embedding_backend": "gemini",  # or "local"
-    "embedding_model": "gemini-video",  # or "qwen8b", "qwen2b"
+    "embedding_backend": "gemini",  # or "flm" (Lemonade), "local"
+    "embedding_model": "gemini-video",  # or Lemonade/ local model
 }
 ```
 
@@ -450,8 +450,16 @@ Detection Event (5-30s clip)
 | Backend | Model | Cost | Speed | Quality | Use Case |
 |---------|-------|------|-------|---------|----------|
 | **Gemini API** | Gemini Video | ~$2.84/hr footage | Fast (~2-5s/chunk) | Best | Production, research |
+| **Lemonade Server FLM** | nomic-embed + qwen3vl-it-4b | Free (NPU power) | Fast (~2-5s/chunk) | Best | **Local NPU, AMD Ryzen AI** |
 | **Local (Qwen3-VL-8B)** | qwen8b | Free (GPU power) | Medium (~5-10s/chunk) | Good | Offline, privacy |
 | **Local (Qwen3-VL-2B)** | qwen2b | Free (GPU power) | Fast (~3-6s/chunk) | Fair | Low-end hardware |
+
+**Lemonade Server FLM Architecture (v4.2):**
+```
+flm_embedder.py -> httpx -> Lemonade Server (localhost:8000/v1/)
+    -> Router -> FLM (NPU) for vision-language (qwen3vl-it-4b-FLM)
+    -> Router -> llama.cpp for embeddings (nomic-embed-text-v2-moe-GGUF)
+```
 
 ---
 

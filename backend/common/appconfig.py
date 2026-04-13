@@ -33,10 +33,11 @@ DEFAULT_APP_CONFIG: Dict[str, Any] = {
     "track_interval_ms": 2000,
     "enable_soapy_discovery": False,
     "runonce_soapy_discovery": True,
-    # FLM (FastFlowLM) local model configuration
-    "flm_base_url": "http://localhost:8080",
-    "flm_embedding_model": "embed-gemma:300m",
-    "flm_vision_model": "qwen3vl-it:4b",
+    # Lemonade Server + FLM (FastFlowLM) local model configuration
+    # Lemonade Server routes inference to FLM on AMD Ryzen AI NPU
+    "flm_base_url": "http://localhost:8000",
+    "flm_embedding_model": "nomic-embed-text-v2-moe-GGUF",
+    "flm_vision_model": "qwen3vl-it-4b-FLM",
     "flm_dimensions": 768,
     "flm_timeout": 30.0,
     "embedder_backend": "gemini",  # Use "flm" for local NPU embedding

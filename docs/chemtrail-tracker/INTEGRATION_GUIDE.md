@@ -33,7 +33,7 @@ The Phase 1.5 SentrySearch integration transforms the Chemtrail Webcam Tracker f
 |------------|-------------|
 | **Video Chunking** | Split webcam feeds into 5-30 second overlapping segments for processing |
 | **Still-Frame Detection** | Skip static sky frames, reducing CPU load by 60-80% |
-| **Semantic Embedding** | Generate vector embeddings using Gemini API or local Qwen3-VL models |
+| **Semantic Embedding** | Generate vector embeddings using Gemini API, or Lemonade Server (FLM NPU) for local inference |
 | **Vector Storage** | Archive detections in ChromaDB with rich metadata |
 | **Natural Language Search** | Query detection archive using plain English |
 | **Metadata Filtering** | Filter by flight ICAO24, camera ID, date range, detection type |
@@ -580,8 +580,8 @@ def get_embedder(backend: str = "gemini", **kwargs) -> BaseEmbedder
 **Parameters:**
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `backend` | `str` | `"gemini"` or `"local"` |
-| `model` | `str` | For local: `"qwen8b"`, `"qwen2b"` |
+| `backend` | `str` | `"gemini"`, `"flm"` (Lemonade Server), or `"local"` |
+| `model` | `str` | For local: `"qwen8b"`, `"qwen2b"`; FLM uses env vars |
 | `dimensions` | `int` | Output embedding dimensions |
 
 #### `embed_video_chunk()`
@@ -856,6 +856,9 @@ echo "GEMINI_API_KEY=your-api-key" >> .env
 
 # Or use local backend
 embedder = get_embedder(backend="local")
+
+# Or use Lemonade Server FLM (recommended for AMD Ryzen AI NPU)
+embedder = get_embedder(backend="flm")
 ```
 
 #### 3. ChromaDB Backend Mismatch
@@ -870,7 +873,7 @@ BackendMismatchError: This index was built with the gemini backend
 # Detect existing backend
 from chemtrail.archive.vector_store import detect_backend
 
-backend = detect_backend()  # Returns "gemini" or "local"
+backend = detect_backend()  # Returns "gemini", "flm", or "local"
 
 # Use matching backend
 store = ChemtrailVectorStore(backend=backend)
@@ -889,8 +892,8 @@ GeminiQuotaError: Gemini API rate limit exceeded
 # Option 1: Use larger chunk duration
 chunks = chunk_video("video.mp4", chunk_duration=60)  # Fewer chunks
 
-# Option 2: Use local backend
-embedder = get_embedder(backend="local")
+# Option 2: Use Lemonade Server FLM (local NPU)
+embedder = get_embedder(backend="flm")
 
 # Option 3: Implement retry with backoff
 from chemtrail.archive.gemini_embedder import _retry
@@ -948,9 +951,16 @@ if result == input_path:
 **Symptoms:** Embedding takes >10 seconds per chunk
 
 **Solutions:**
-1. Use local backend with smaller model:
+1. Use Lemonade Server FLM backend for NPU-accelerated embedding:
 ```python
-embedder = get_embedder(backend="local", model="qwen2b")
+embedder = get_embedder(backend="flm")
+```
+
+2. Use smaller embedding model via Lemonade:
+```python
+# Qwen3-Embedding-0.6B-GGUF is smaller/faster
+import os
+os.environ["FLM_EMBEDDING_MODEL"] = "Qwen3-Embedding-0.6B-GGUF"
 ```
 
 2. Preprocess chunks to smaller size:
