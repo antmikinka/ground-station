@@ -37,6 +37,7 @@ from . import (
     chemtrail_cameras,
     chemtrail_detections,
     chemtrail_flights,
+    chemtrail_pipeline,
 )
 
 __all__ = [
@@ -56,4 +57,5 @@ __all__ = [
     "chemtrail_cameras",
     "chemtrail_detections",
     "chemtrail_flights",
+    "chemtrail_pipeline",
 ]

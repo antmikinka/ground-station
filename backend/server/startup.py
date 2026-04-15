@@ -40,6 +40,18 @@ from tasks.registry import get_task
 from tracker.messages import handle_tracker_messages
 from tracker.runner import get_tracker_manager, start_tracker_process
 
+# Chemtrail pipeline initialization (optional - requires FFmpeg and hardware dependencies)
+try:
+    from chemtrail.sources.pipeline_orchestrator import PipelineOrchestrator, PipelineConfig
+    from chemtrail.sources.webcam_manager import WebcamManager
+    from chemtrail.sources.historical_ingestor import HistoricalIngestor
+    from chemtrail.archive.detection_service import DetectionService
+    from chemtrail.archive.vector_store import get_vector_store
+    from handlers.entities import chemtrail_pipeline
+    CHEMTRAIL_AVAILABLE = True
+except ImportError:
+    CHEMTRAIL_AVAILABLE = False
+
 # Increase payload limits to handle large waterfall PNG images and maintenance uploads.
 Payload.max_decode_packets = 50
 # Default is 100KB (100000 bytes), increase to 30MB.
@@ -167,10 +179,44 @@ async def lifespan(fastapiapp: FastAPI):
     # Start session runtime snapshot emitter task (registers into background_tasks)
     start_session_runtime_emitter(sio, background_tasks)
 
+    # Initialize chemtrail pipeline orchestrator (if available)
+    if CHEMTRAIL_AVAILABLE:
+        try:
+            chemtrail_config = PipelineConfig(max_concurrent_jobs=3)
+            webcam_manager = WebcamManager()
+            historical_ingestor = HistoricalIngestor()
+            detection_service = DetectionService()
+            vector_store = get_vector_store()
+
+            orchestrator = PipelineOrchestrator(
+                session=None,  # Will use AsyncSessionLocal internally
+                webcam_manager=webcam_manager,
+                historical_ingestor=historical_ingestor,
+                detection_service=detection_service,
+                config=chemtrail_config,
+            )
+
+            chemtrail_pipeline.set_pipeline_orchestrator(orchestrator)
+            await orchestrator.start()
+            logger.info("Chemtrail pipeline orchestrator initialized")
+        except Exception as e:
+            logger.warning(f"Chemtrail pipeline initialization skipped: {e}")
+
     try:
         yield
     finally:
         logger.info("FastAPI lifespan cleanup...")
+
+        # Stop chemtrail pipeline orchestrator
+        if CHEMTRAIL_AVAILABLE:
+            try:
+                orchestrator = chemtrail_pipeline.get_pipeline_orchestrator()
+                if orchestrator:
+                    await orchestrator.stop()
+                    logger.info("Chemtrail pipeline orchestrator stopped")
+            except Exception as e:
+                logger.warning(f"Chemtrail pipeline shutdown error: {e}")
+
         # Shutdown background task manager
         if background_task_manager:
             await background_task_manager.shutdown()

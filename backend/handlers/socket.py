@@ -58,6 +58,16 @@ def _register_all_handlers():
     scheduler.register_handlers(handler_registry)
     decoderconfig.register_handlers(handler_registry)
 
+    # Chemtrail handlers (optional import)
+    try:
+        from handlers.entities import chemtrail_cameras, chemtrail_detections, chemtrail_flights, chemtrail_pipeline
+        chemtrail_cameras.register_handlers(handler_registry)
+        chemtrail_detections.register_handlers(handler_registry)
+        chemtrail_flights.register_handlers(handler_registry)
+        chemtrail_pipeline.register_handlers(handler_registry)
+    except ImportError:
+        logger.warning("Chemtrail handlers not available, skipping registration")
+
 
 # Register all handlers at module load time
 _register_all_handlers()

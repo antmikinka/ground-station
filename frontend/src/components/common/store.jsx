@@ -51,6 +51,7 @@ import tasksReducer from '../tasks/tasks-slice.jsx';
 import backendSyncMiddleware from '../waterfall/vfo-marker/vfo-middleware.jsx';
 import chemtrailDetectionsReducer from '../chemtrail/detections/detections-slice.js';
 import chemtrailFlightsReducer from '../chemtrail/flights/flights-slice.js';
+import chemtrailPipelineReducer from '../chemtrail/pipeline/pipeline-slice.js';
 
 const storage = storageEngine?.default ?? storageEngine;
 
@@ -318,6 +319,7 @@ export const store = configureStore({
         backgroundTasks: persistedTasksReducer,
         chemtrailDetections: chemtrailDetectionsReducer,
         chemtrailFlights: chemtrailFlightsReducer,
+        chemtrailPipeline: chemtrailPipelineReducer,
     },
     devTools: process.env.NODE_ENV !== "production",
     middleware: (getDefaultMiddleware) =>

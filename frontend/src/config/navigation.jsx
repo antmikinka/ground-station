@@ -332,6 +332,7 @@ export const getNavigation = () => [
         title: i18n.t('chemtrail', { ns: 'navigation' }),
         icon: <RadarIcon />,
         children: [
+            { kind: 'nav-link', label: i18n.t('pipeline_control', { ns: 'navigation' }), pathname: '/chemtrail/control', icon: <SettingsIcon /> },
             { kind: 'nav-link', label: i18n.t('cameras', { ns: 'navigation' }), pathname: '/chemtrail/cameras', icon: <VideocamIcon /> },
             { kind: 'nav-link', label: i18n.t('detections', { ns: 'navigation' }), pathname: '/chemtrail/detections', icon: <RadarIcon /> },
             { kind: 'nav-link', label: i18n.t('flights', { ns: 'navigation' }), pathname: '/chemtrail/flights', icon: <FlightIcon /> },

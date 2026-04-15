@@ -12,6 +12,7 @@
   "tle_sources": "TLE sources",
   "groups": "Groups",
   "chemtrail": "Chemtrail Tracker",
+  "pipeline_control": "Pipeline Control",
   "detections": "Detections",
   "flights": "Live Flights",
   "archive_search": "Archive Search",

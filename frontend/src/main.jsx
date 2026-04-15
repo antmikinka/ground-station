@@ -54,6 +54,7 @@ import DetectionTable from "./components/chemtrail/detections/detection-table.js
 import FlightTable from "./components/chemtrail/flights/flight-table.jsx";
 import ArchiveSearch from "./components/chemtrail/search/archive-search.jsx";
 import PipelineStatus from "./components/chemtrail/status/pipeline-status.jsx";
+import PipelineControl from "./components/chemtrail/pipeline/pipeline-control.jsx";
 
 const enableStrictMode = import.meta.env.VITE_REACT_STRICT_MODE !== 'false';
 
@@ -176,6 +177,10 @@ const router = createBrowserRouter([
                             {
                                 path: "status",
                                 Component: PipelineStatus,
+                            },
+                            {
+                                path: "control",
+                                Component: PipelineControl,
                             },
                         ],
                     },
