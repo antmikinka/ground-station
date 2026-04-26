@@ -52,6 +52,7 @@ import backendSyncMiddleware from '../waterfall/vfo-marker/vfo-middleware.jsx';
 import chemtrailDetectionsReducer from '../chemtrail/detections/detections-slice.js';
 import chemtrailFlightsReducer from '../chemtrail/flights/flights-slice.js';
 import chemtrailPipelineReducer from '../chemtrail/pipeline/pipeline-slice.js';
+import chemtrailWebcamReducer from '../chemtrail/webcam/webcam-slice.js';
 
 const storage = storageEngine?.default ?? storageEngine;
 
@@ -320,6 +321,7 @@ export const store = configureStore({
         chemtrailDetections: chemtrailDetectionsReducer,
         chemtrailFlights: chemtrailFlightsReducer,
         chemtrailPipeline: chemtrailPipelineReducer,
+        chemtrailWebcam: chemtrailWebcamReducer,
     },
     devTools: process.env.NODE_ENV !== "production",
     middleware: (getDefaultMiddleware) =>

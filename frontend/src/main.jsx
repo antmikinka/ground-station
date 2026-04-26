@@ -55,6 +55,7 @@ import FlightTable from "./components/chemtrail/flights/flight-table.jsx";
 import ArchiveSearch from "./components/chemtrail/search/archive-search.jsx";
 import PipelineStatus from "./components/chemtrail/status/pipeline-status.jsx";
 import PipelineControl from "./components/chemtrail/pipeline/pipeline-control.jsx";
+import WebcamViewer from "./components/chemtrail/webcam/webcam-viewer.jsx";
 
 const enableStrictMode = import.meta.env.VITE_REACT_STRICT_MODE !== 'false';
 
@@ -158,6 +159,10 @@ const router = createBrowserRouter([
                     {
                         path: "chemtrail",
                         children: [
+                            {
+                                path: "webcam",
+                                Component: WebcamViewer,
+                            },
                             {
                                 path: "cameras",
                                 Component: SettingsTabCamera,
